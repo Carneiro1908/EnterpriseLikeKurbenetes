@@ -23,7 +23,9 @@ resource "aws_iam_policy" "s3_policy" {
 
                     # permissions with bucket content
                     "s3:GetObject",
-                    "s3:DeleteObject"
+                    "s3:DeleteObject",
+                    "s3:ListBucket",
+                    "s3.PutObject"
                 ]
                 Effect   = "Allow"
                 Resource = ["*"]
