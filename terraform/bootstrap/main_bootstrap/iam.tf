@@ -25,7 +25,6 @@ resource "aws_iam_policy" "github_oidc_role_s3_policy" {
         ]
     })
 }
-
 resource "aws_iam_role_policy_attachment" "github_oidc_role_s3_policy_attachment" {
     role       = aws_iam_role.github_main_infra_role.name
     policy_arn = aws_iam_policy.github_oidc_role_s3_policy.arn
@@ -71,7 +70,6 @@ resource "aws_iam_policy" "github_oidc_role_eks_policy" {
         ]
     })
 }
-
 resource "aws_iam_role_policy_attachment" "github_oidc_role_eks_policy_attachment" {
     role       = aws_iam_role.github_main_infra_role.name
     policy_arn = aws_iam_policy.github_oidc_role_eks_policy.arn
@@ -101,6 +99,10 @@ resource "aws_iam_policy" "github_oidc_role_iam_policy" {
             }
         ]
     })
+}
+resource "aws_iam_role_policy_attachment" "github_oidc_role_iam_policy_attachment" {
+    role       = aws_iam_role.github_main_infra_role.name
+    policy_arn = aws_iam_policy.github_oidc_role_iam_policy.arn
 }
 
 # EC2 permissions (needed for building EKS)
@@ -132,7 +134,6 @@ resource "aws_iam_policy" "github_oidc_role_ec2_policy" {
         ]
     })
 }
-
 resource "aws_iam_role_policy_attachment" "github_oidc_role_iam_policy_attachment" {
     role       = aws_iam_role.github_main_infra_role.name
     policy_arn = aws_iam_policy.github_oidc_role_iam_policy.arn
@@ -184,7 +185,6 @@ resource "aws_iam_policy" "github_oidc_role_vpc_policy" {
         ]
     })
 }
-
 resource "aws_iam_role_policy_attachment" "github_oidc_role_vpc_policy_attachment" {
     role       = aws_iam_role.github_main_infra_role.name
     policy_arn = aws_iam_policy.github_oidc_role_vpc_policy.arn
@@ -225,4 +225,8 @@ resource "aws_iam_policy" "github_oidc_role_ecr_policy" {
             }
         ]
     })
+}
+resource "aws_iam_role_policy_attachment" "github_oidc_role_ecr_policy_attachment" {
+    role       = aws_iam_role.github_main_infra_role.name
+    policy_arn = aws_iam_policy.github_oidc_role_ecr_policy.arn
 }
