@@ -82,6 +82,7 @@ resource "aws_iam_policy" "iam_actions_policy" {
             {
                 Action = [
                     # permissions with roles
+                    "iam:GetRole",
                     "iam:CreateRole",
                     "iam:DeleteRole",
                     "iam:UpdateRole",          
@@ -92,7 +93,12 @@ resource "aws_iam_policy" "iam_actions_policy" {
                     "iam:DeletePolicy",
                     "iam:AttachRolePolicy",
                     "iam:DetachRolePolicy",
-                    "iam:UpdateAssumeRolePolicy"
+                    "iam:UpdateAssumeRolePolicy",
+                    "iam:GetPolicy",
+                    "iam:GetPolicyVersion",
+                    "iam:ListInstanceProfilesForRole",
+                    "iam:ListRolePolicies",
+                    "iam:ListAttachedRolePolicies"
                 ]
                 Effect   = "Allow"
                 Resource = ["*"]
