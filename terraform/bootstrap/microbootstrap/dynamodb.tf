@@ -1,6 +1,6 @@
 # Creating table
-resource "aws_dynamodb_table" "bootstrap_table" {
-    name = "bootstrap_table"
+resource "aws_dynamodb_table" "main_bootstrap_table" {
+    name = "main_bootstrap_table"
     billing_mode = "PAY_PER_REQUEST"
 
     attribute {

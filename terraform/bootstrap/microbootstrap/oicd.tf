@@ -12,6 +12,8 @@ resource "aws_iam_openid_connect_provider" "oidc" {
 
 # Create the trust policy
 data "aws_iam_policy_document" "github_oidc_assume_role" {
+    id = "github_oidc_assume_role_policy_${var.account_id}"
+
     statement {
         actions = ["sts:AssumeRoleWithWebIdentity"]
         effect = "Allow"
