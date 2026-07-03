@@ -126,6 +126,8 @@ resource "aws_iam_policy" "kms_policy" {
                     "kms:ListKeys",
                     "kms:ListAliases",
                     "kms:CreateAlias",
+                    "kms:Decrypt",
+                    "kms:GenerateDataKey*",
                     "kms:DeleteAlias",
                 ]
                 Effect   = "Allow"
