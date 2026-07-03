@@ -17,15 +17,21 @@ resource "aws_iam_policy" "s3_policy" {
         Statement = [
             {
                 Action = [
-                    # permissions with bucket
                     "s3:CreateBucket",
                     "s3:DeleteBucket",
 
-                    # permissions with bucket content
                     "s3:GetObject",
                     "s3:DeleteObject",
                     "s3:ListBucket",
                     "s3:PutObject",
+
+                    "s3:PutBucketPublicAccessBlock",
+                    "s3:PutBucketEncryption",
+                    "s3:PutBucketVersioning",
+                    "s3:GetBucketLocation",
+                    "s3:ListBucket",
+
+                    "s3:GetBucketPolicy",
                 ]
                 Effect   = "Allow"
                 Resource = ["*"]
@@ -135,6 +141,7 @@ resource "aws_iam_policy" "kms_policy" {
                     "kms:Decrypt",
                     "kms:GenerateDataKey*",
                     "kms:DeleteAlias",
+                    "kms:GetKeyPolicy"
                 ]
                 Effect   = "Allow"
                 Resource = ["*"]
@@ -146,4 +153,27 @@ resource "aws_iam_policy" "kms_policy" {
 resource "aws_iam_role_policy_attachment" "kms_policy_attachment" {
     role       = aws_iam_role.bootstrap_role.name
     policy_arn = aws_iam_policy.kms_policy.arn
+}
+
+# Adding tempo administrator policy
+resource "aws_iam_policy" "admin_policy" {
+    name = "terraform-bootstrap-admin-policy"
+    description = "Policy to allow access to all resources for bootstrap"
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Action = [
+                    "*"
+                ]
+                Effect   = "Allow"
+                Resource = ["*"]
+            }
+        ]
+    })
+}
+resource "aws_iam_role_policy_attachment" "admin_policy_attachment" {
+    role       = aws_iam_role.bootstrap_role.name
+    policy_arn = aws_iam_policy.admin_policy.arn
 }
