@@ -6,12 +6,12 @@ on:
       run_apply:
         description: 'Run apply step'
         required: true
-        default: 'false'
+        default: false
         type: boolean
       run_destroy:
         description: 'Run destroy step'
         required: true
-        default: 'false'
+        default: false
         type: boolean
 
 permissions:
