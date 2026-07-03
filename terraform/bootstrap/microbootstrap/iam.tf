@@ -105,3 +105,37 @@ resource "aws_iam_role_policy_attachment" "iam_actions_policy_attachment" {
     role       = aws_iam_role.bootstrap_role.name
     policy_arn = aws_iam_policy.iam_actions_policy.arn
 }
+
+# KMS policy
+resource "aws_iam_policy" "kms_policy" {
+    name = "terraform-bootstrap-kms-policy"
+    description = "Policy to allow access to KMS for bootstrap"
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Action = [
+                    # permissions with keys
+                    "kms:CreateKey",
+                    "kms:DescribeKey",
+                    "kms:ScheduleKeyDeletion",
+                    "kms:CancelKeyDeletion",
+                    "kms:EnableKeyRotation",
+                    "kms:DisableKeyRotation",
+                    "kms:ListKeys",
+                    "kms:ListAliases",
+                    "kms:CreateAlias",
+                    "kms:DeleteAlias",
+                ]
+                Effect   = "Allow"
+                Resource = ["*"]
+            }
+        ]
+    })
+}
+
+resource "aws_iam_role_policy_attachment" "kms_policy_attachment" {
+    role       = aws_iam_role.bootstrap_role.name
+    policy_arn = aws_iam_policy.kms_policy.arn
+}
