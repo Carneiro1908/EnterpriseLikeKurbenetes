@@ -51,7 +51,12 @@ resource "aws_iam_policy" "dynamodb_policy" {
             {
                 Action = [
                     "dynamodb:CreateTable",
-                    "dynamodb:DeleteTable"
+                    "dynamodb:DeleteTable",
+                    "dynamodb:DescribeTable",
+                    "dynamodb:UpdateTable",
+                    "dynamodb:PutItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:DeleteItem",
                 ]
                 Effect   = "Allow"
                 Resource = ["*"]
