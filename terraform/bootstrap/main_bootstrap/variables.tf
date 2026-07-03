@@ -6,8 +6,6 @@ variable "region" {
     default     = "eu-central-1"
 }
 
-variable "account_id" {
-    description = "The AWS account ID where resources will be deployed"
-    type        = string
-    default = "${data.aws_caller_identity.current.account_id}"
+locals {
+    account_id = data.aws_caller_identity.current.account_id
 }

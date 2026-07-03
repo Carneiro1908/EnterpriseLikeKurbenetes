@@ -1,6 +1,6 @@
 # Creating bucket
 resource "aws_s3_bucket" "main_bootstrap_bucket" {
-    bucket = "terraform-main-bootstrap-bucket-${var.account_id}-${var.region}"
+    bucket = "terraform-main-bootstrap-bucket-${locals.account_id}-${var.region}"
 
     lifecycle {
         prevent_destroy = true
