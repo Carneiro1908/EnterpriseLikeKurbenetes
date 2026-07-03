@@ -1,0 +1,66 @@
+name: Terraform Bootstrap Infrastructure CI/CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_apply:
+        description: 'Run apply step'
+        required: true
+        default: 'false'
+        type: boolean
+      run_destroy:
+        description: 'Run destroy step'
+        required: true
+        default: 'false'
+        type: boolean
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: terraform-infra
+  cancel-in-progress: false
+
+jobs:
+  terraform:
+    name: Terraform Bootstrap Infrastructure
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: terraform/bootstrap/main_bootstrap
+
+    env:
+      ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+      AWS_REGION: eu-central-1
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.7.6
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ env.ACCOUNT_ID }}:role/terraform-bootstrap-role
+          aws-region: ${{ env.AWS_REGION }}
+          audience: sts.amazonaws.com
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Terraform Plan
+        run: terraform plan -input=false
+
+      - name: Terraform Apply
+        if: ${{ github.event.inputs.run_apply == 'true' }}
+        run: terraform apply -auto-approve -input=false
+
+      - name: Terraform Destroy
+        if: ${{ github.event.inputs.run_destroy == 'true' }}
+        run: terraform destroy -auto-approve -input=false
