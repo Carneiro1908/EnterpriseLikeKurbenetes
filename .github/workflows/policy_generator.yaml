@@ -118,17 +118,20 @@ jobs:
           AWS_CSM_PORT: "31000"
           AWS_CSM_HOST: "127.0.0.1"
         run: |
-          # Starts iamlive in background
-          iamlive -mode csm -csm-port 31000 -output-file policy_output.json &
+         # Sobe o iamlive em modo proxy (gera ca.pem/ca.key em ~/.iamlive/)
+          iamlive -mode proxy -output-file policy_output.json -force-wildcard-resource=false &
           IAMLIVE_PID=$!
           sleep 5
 
           echo "Starting Core Terraform Cycle..."
-          
+
+          export HTTP_PROXY=http://127.0.0.1:10080
+          export HTTPS_PROXY=http://127.0.0.1:10080
+          export AWS_CA_BUNDLE=$HOME/.iamlive/ca.pem
+
           case "${{ github.event.inputs.target_action }}" in
             "terraform apply")
               terraform apply --auto-approve || true
-
               ;;
             "terraform destroy")
               terraform destroy --auto-approve || true
@@ -139,9 +142,9 @@ jobs:
               ;;
           esac
 
-          
+          unset HTTP_PROXY HTTPS_PROXY AWS_CA_BUNDLE
+
           echo "Wrapping up iamlive session..."
-          # Stops iamlive gracefully to ensure the JSON file is written completely
           kill -SIGINT $IAMLIVE_PID
           sleep 5
 
