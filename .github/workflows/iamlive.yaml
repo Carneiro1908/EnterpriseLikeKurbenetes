@@ -37,12 +37,33 @@ jobs:
 
       - name: Install iamlive
         run: |
+          set -e
+          # Resolve a URL do asset linux-amd64 da última release automaticamente
           ASSET_URL=$(curl -s https://api.github.com/repos/iann0036/iamlive/releases/latest \
-            | grep "browser_download_url.*linux-amd64.tar.gz" \
+            | grep "browser_download_url" \
+            | grep "linux-amd64.tar.gz" \
             | cut -d '"' -f 4)
+
+          if [ -z "$ASSET_URL" ]; then
+            echo "Não encontrei o asset linux-amd64 na última release"
+            exit 1
+          fi
+
+          echo "Baixando: $ASSET_URL"
           curl -L "$ASSET_URL" -o iamlive.tar.gz
+
+          # Extrai o binário
           tar xvzf iamlive.tar.gz
+
+          # Move para um diretório já presente no PATH
           sudo mv iamlive /usr/local/bin/
+
+          # Garante permissão de execução
+          sudo chmod +x /usr/local/bin/iamlive
+
+          # Confirma que está no PATH e funcionando
+          which iamlive
+          iamlive --version || iamlive -h
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
