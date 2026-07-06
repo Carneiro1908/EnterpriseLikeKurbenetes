@@ -86,19 +86,18 @@ jobs:
             -backend-config="key=enviroment/bootstrap/terraform.tfstate" \
             -backend-config="region=${{ env.AWS_REGION }}"
 
-
-      # 3. Run the scan directly pointing to the selected directory
+      # 3. Run the scan targeting only the Terraform files inside the selected directory
       - name: Run IAM Policy Autopilot
         working-directory: ${{ steps.setdir.outputs.dir }}
         run: |
           iam-policy-autopilot generate-policies \
-            --tf-dir "${{ steps.setdir.outputs.dir }}" \
+            --tf-dir . \
             --region "${{ env.AWS_REGION }}" \
             --account "${{ env.ACCOUNT_ID }}" \
-            . > policy_output.json
+            *.tf > policy_output.json
 
       - name: Upload Policy Artifact
         uses: actions/upload-artifact@v4
         with:
           name: iam-policy
-          path: policy_output.json
+          path: ${{ steps.setdir.outputs.dir }}/policy_output.json
