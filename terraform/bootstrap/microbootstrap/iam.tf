@@ -66,6 +66,10 @@ resource "aws_iam_policy" "permissionsterraformplan" {
     })
 }
 
+resource "aws_iam_role_policy_attachment" "permissionfoterraformplan_attachment" {
+    role = aws_iam_role.iamlive_role.name  
+    policy_arn = aws_iam_policy.permissionsterraformplan.arn
+}
 
 resource "aws_iam_role_policy_attachment" "readonly_policy_attachment" {
     role = aws_iam_role.iamlive_role.name
