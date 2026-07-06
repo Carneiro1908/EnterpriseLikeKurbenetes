@@ -37,21 +37,37 @@ jobs:
 
       - name: Install iamlive
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Necessário para o comando 'gh' funcionar
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # 1. Cria a pasta de destino
           mkdir -p $HOME/.iam-live
+          mkdir -p ./tmp-iam-live
           
-          # 2. Baixa o ZIP do Linux (independente de maiúsculas/minúsculas)
-          gh release download --repo iann0036/iam-live --pattern "*[lL]inux*.zip"
+          # 2. Baixa TODOS os arquivos da última release em uma pasta temporária (assim não erramos o padrão)
+          gh release download --repo iann0036/iam-live --dir ./tmp-iam-live
           
-          # 3. Extrai o arquivo zip direto para a pasta de destino
-          unzip iam-live-*.zip -d $HOME/.iam-live/
+          # 3. Procura por arquivos Linux de 64 bits dentro da pasta baixada
+          FILE_ZIP=$(find ./tmp-iam-live -type f -iname "*linux*amd64*.zip" -o -iname "*amd64*linux*.zip" | head -n 1)
+          FILE_TAR=$(find ./tmp-iam-live -type f -iname "*linux*amd64*.tar.gz" -o -iname "*amd64*linux*.tar.gz" | head -n 1)
           
-          # 4. Garante permissão de execução no binário extraído
+          # 4. Extrai dependendo do formato que encontrar
+          if [ -n "$FILE_ZIP" ]; then
+            echo "Extraindo ZIP: $FILE_ZIP"
+            unzip "$FILE_ZIP" -d $HOME/.iam-live/
+          elif [ -n "$FILE_TAR" ]; then
+            echo "Extraindo TAR: $FILE_TAR"
+            tar -xvf "$FILE_TAR" -C $HOME/.iam-live/
+          else
+            echo "Erro: Nenhum arquivo compatível com Linux AMD64 foi encontrado. Arquivos baixados:"
+            ls -l ./tmp-iam-live
+            exit 1
+          fi
+          
+          # 5. Garante permissão de execução e limpa temporários
           chmod +x $HOME/.iam-live/*
+          rm -rf ./tmp-iam-live
           
-          # 5. Adiciona a pasta ao PATH do GitHub Actions
+          # 6. Adiciona a pasta ao PATH do GitHub Actions
           echo "$HOME/.iam-live" >> $GITHUB_PATH
 
 
