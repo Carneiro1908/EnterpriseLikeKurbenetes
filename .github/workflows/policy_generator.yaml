@@ -89,6 +89,7 @@ jobs:
 
       # 3. Run the scan directly pointing to the selected directory
       - name: Run IAM Policy Autopilot
+        working-directory: ${{ steps.setdir.outputs.dir }}
         run: |
           # Dynamic check to see available flags if needed
           iam-policy-autopilot generate-policies --help
