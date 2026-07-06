@@ -95,7 +95,7 @@ jobs:
             --tf-dir "${{ steps.setdir.outputs.dir }}" \
             --region "${{ env.AWS_REGION }}" \
             --account "${{ env.ACCOUNT_ID }}" \
-            "${{ steps.setdir.outputs.dir }}" > policy_output.json
+            . > policy_output.json
 
       - name: Upload Policy Artifact
         uses: actions/upload-artifact@v4
