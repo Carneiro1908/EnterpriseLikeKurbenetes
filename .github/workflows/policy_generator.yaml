@@ -114,11 +114,12 @@ jobs:
       - name: Run iamlive and Terraform
         working-directory: ${{ steps.setdir.outputs.dir }}
         env:
-            HTTP_PROXY: "http://127.0.0.1:10080"
-            HTTPS_PROXY: "http://127.0.0.1:10080"
-            AWS_CA_BUNDLE: "${{ github.workspace }}/ca.pem"
+          AWS_CSM_ENABLED: "true"
+          AWS_CSM_PORT: "31000"
+          AWS_CSM_HOST: "127.0.0.1"
         run: |
-          iamlive -mode proxy -output-file policy_output.json &
+          # Starts iamlive in background
+          iamlive -mode csm -csm-port 31000 -output-file policy_output.json &
           IAMLIVE_PID=$!
           sleep 5
 
