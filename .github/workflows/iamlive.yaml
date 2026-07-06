@@ -36,16 +36,22 @@ jobs:
           terraform_version: 1.5.7
 
       - name: Install iamlive
-        env:
-          IAMLIVE_VERSION: v1.1.28
         run: |
-          set -e
-          curl -L -f "https://github.com/iann0036/iamlive/releases/download/${IAMLIVE_VERSION}/iamlive-${IAMLIVE_VERSION}-linux-amd64.tar.gz" -o iamlive.tar.gz
-          tar xvzf iamlive.tar.gz
-          sudo mv iamlive /usr/local/bin/
-          sudo chmod +x /usr/local/bin/iamlive
-          which iamlive
-          iamlive --version || true
+          # Definir a versão desejada
+          VERSION="v1.0.0" 
+          
+          # Baixar o binário (ajustando para Linux amd64 que é o padrão do ubuntu-latest)
+          curl -L -o iam-live.tar.gz "https://github.com/iann0036/iam-live/releases/download/${VERSION}/iam-live-Linux-amd64.tar.gz"
+          
+          # Descompactar o arquivo
+          tar -xvf iam-live.tar.gz
+          
+          # Mover para um diretório local ou criar um se preferir
+          mkdir -p $HOME/.iam-live
+          mv iam-live $HOME/.iam-live/
+          
+          # Adicionar o diretório ao PATH do GitHub Actions para os próximos steps
+          echo "$HOME/.iam-live" >> $GITHUB_PATH
 
 
       - name: Configure AWS Credentials
