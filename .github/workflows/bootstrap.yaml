@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       run_plan:
-          description: 'Run plan'
-          required: true
-          default: true
-          type: boolean
+        description: 'Run plan'
+        required: true
+        default: true
+        type: boolean
       run_apply:
         description: 'Run apply'
         required: true
