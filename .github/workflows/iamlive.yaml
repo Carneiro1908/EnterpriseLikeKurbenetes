@@ -51,19 +51,19 @@ jobs:
         id: setdir
         run: |
           case "${{github.event.inputs.environment}}" in
-            main bootstrap)
+            "main bootstrap")
               echo "dir=./terraform/bootstrap/main_bootstrap" >> "$GITHUB_OUTPUT"
               ;;
-            main infra)
+            "main infra")
               echo "dir=./terraform/main_infra" >> "$GITHUB_OUTPUT"
               ;;
-            dev)
+            "dev")
               echo "dir=./terraform/main_infra/env/dev" >> "$GITHUB_OUTPUT"
               ;;
-            staging)
+            "staging")
               echo "dir=./terraform/main_infra/env/staging" >> "$GITHUB_OUTPUT"
               ;;
-            prod)
+            "prod")
               echo "dir=./terraform/main_infra/env/prod" >> "$GITHUB_OUTPUT"
               ;;
             *)
@@ -95,7 +95,7 @@ jobs:
           kill -SIGINT $IAMLIVE_PID
 
       - name: Upload Policy Artifact
-        uses: actions/upload-artifacts@v4
+        uses: actions/upload-artifact@v4
         with:
           name: iam-policy
           path: policy_output.json

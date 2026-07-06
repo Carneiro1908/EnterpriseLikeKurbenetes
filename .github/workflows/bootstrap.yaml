@@ -80,7 +80,7 @@ jobs:
         run: terraform apply -auto-approve -input=false
 
       - name: Terraform Plan destroy
-        if: ${{github.event.inputs.run_destroy == 'true' || github.event.inputs.run_plan_destroy = 'true'}})
+        if: ${{github.event.inputs.run_destroy == 'true' || github.event.inputs.run_plan_destroy == 'true'}}
         run: terraform plan --destroy -input=false
 
       - name: Terraform Destroy
