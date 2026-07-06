@@ -1,0 +1,96 @@
+name: Policy detector (autopilot)
+
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: The target infrastructure 
+        required: true
+        default: ''
+        type: choice  
+        options:
+          - main bootstrap
+          - main infra
+          - env dev
+          - env staging
+          - env prod
+
+jobs:
+  DetectPolicies:
+    runs-on: ubuntu-latest
+
+    env:
+      ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+      AWS_REGION: eu-central-1
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+
+      # 1. Set up the Python environment natively
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      # 2. Install the tool via PIP (automatically manages PATH)
+      - name: Install IAM Policy Autopilot
+        run: pip install iam-policy-autopilot
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/iamlive-role
+          aws-region: ${{ env.AWS_REGION }}
+          audience: sts.amazonaws.com
+
+      - name: Select environment
+        id: setdir
+        run: |
+          case "${{ github.event.inputs.environment }}" in
+            "main bootstrap")
+              echo "dir=./terraform/bootstrap/main_bootstrap" >> "$GITHUB_OUTPUT"
+              ;;
+            "main infra")
+              echo "dir=./terraform/main_infra" >> "$GITHUB_OUTPUT"
+              ;;
+            "env dev")
+              echo "dir=./terraform/main_infra/env/dev" >> "$GITHUB_OUTPUT"
+              ;;
+            "env staging")
+              echo "dir=./terraform/main_infra/env/staging" >> "$GITHUB_OUTPUT"
+              ;;
+            "env prod")
+              echo "dir=./terraform/main_infra/env/prod" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Invalid environment: ${{ github.event.inputs.environment }}"
+              exit 1
+              ;;
+          esac
+
+      - name: Terraform Init
+        working-directory: ${{ steps.setdir.outputs.dir }}
+        run: terraform init
+
+      # 3. Run the scan directly pointing to the selected directory
+      - name: Run IAM Policy Autopilot
+        run: |
+          iam-policy-autopilot \
+            --path "${{ steps.setdir.outputs.dir }}" \
+            --output policy_output.json
+
+      - name: Upload Policy Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iam-policy
+          path: policy_output.json
