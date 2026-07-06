@@ -37,20 +37,25 @@ jobs:
 
       - name: Install iamlive
         run: |
-          # Definir a versão desejada
-          VERSION="v1.0.0" 
+          # Obtém a URL de download da última versão para Linux amd64 via API do GitHub
+          DOWNLOAD_URL=$(curl -s https://api.github.com/repos/iann0036/iam-live/releases/latest \
+            | grep "browser_download_url" \
+            | grep "linux-amd64" \
+            | cut -d '"' -f 4)
           
-          # Baixar o binário (ajustando para Linux amd64 que é o padrão do ubuntu-latest)
-          curl -L -o iam-live.tar.gz "https://github.com/iann0036/iam-live/releases/download/${VERSION}/iam-live-Linux-amd64.tar.gz"
+          echo "Baixando de: $DOWNLOAD_URL"
           
-          # Descompactar o arquivo
+          # Baixa o binário correto
+          curl -L -o iam-live.tar.gz "$DOWNLOAD_URL"
+          
+          # Descompacta o arquivo
           tar -xvf iam-live.tar.gz
           
-          # Mover para um diretório local ou criar um se preferir
+          # Move para um diretório local
           mkdir -p $HOME/.iam-live
           mv iam-live $HOME/.iam-live/
           
-          # Adicionar o diretório ao PATH do GitHub Actions para os próximos steps
+          # Adiciona ao PATH do GitHub Actions
           echo "$HOME/.iam-live" >> $GITHUB_PATH
 
 
