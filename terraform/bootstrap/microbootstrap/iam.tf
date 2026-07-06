@@ -38,6 +38,27 @@ resource "aws_iam_role_policy_attachment" "admin_policy_attachment" {
 
 # Adding read only policy
 
+resource "aws_iam_policy" "permissionsterraformplan" {
+    name = "permissions-for-terraform-plan"
+    description = "A punch of permissions needed for terraform plan"
+
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+            {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem"
+            ],
+            "Resource": ["*"]
+            }
+        ]
+    })
+}
+
+
 resource "aws_iam_role_policy_attachment" "readonly_policy_attachment" {
     role = aws_iam_role.iamlive_role.name
     policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
