@@ -104,28 +104,28 @@ jobs:
       # 5. Start iamlive, map Terraform execution via CSM, and save results
       - name: Run iamlive and Terraform
         working-directory: ${{ steps.setdir.outputs.dir }}
+        env:
+          AWS_CSM_ENABLED: "true"
+          AWS_CSM_PORT: "31000"
+          AWS_CSM_HOST: "127.0.0.1"
         run: |
-          # Starts iamlive in background and outputs to a file inside the working directory
+          # Starts iamlive in background
           iamlive -mode csm -csm-port 31000 -output-file policy_output.json &
           IAMLIVE_PID=$!
-          sleep 3
+          sleep 5
           
-          # Enables AWS Client Side Monitoring (CSM) to intercept Terraform actions
-          export AWS_CSM_ENABLED=true
-          export AWS_CSM_PORT=31000
-          export AWS_CSM_HOST=127.0.0.1
-
-          # Running each important terraform commando, so iam live detects the policies needed for each one
-          terraform plan
-          terraform apply --auto-approve
-
-          terraform plan --destroy
-          terraform destroy --auto-approve
-
+          echo "Starting Core Terraform Cycle..."
           
+          terraform plan || true
+          terraform apply --auto-approve || true
+
+          terraform plan --destroy || true
+          terraform destroy --auto-approve || true
+          
+          echo "Wrapping up iamlive session..."
           # Stops iamlive gracefully to ensure the JSON file is written completely
           kill -SIGINT $IAMLIVE_PID
-          sleep 2
+          sleep 5
 
       # 6. Gather the generated JSON file from the specific environment workspace and upload it
       - name: Upload Policy Artifact
