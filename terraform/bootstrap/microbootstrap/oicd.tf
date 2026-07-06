@@ -32,5 +32,11 @@ data "aws_iam_policy_document" "github_oidc_assume_role" {
             variable = "token.actions.githubusercontent.com:sub"
             values = ["repo:Carneiro1908/EnterpriseLikeKurbenetes:*"]
         }
+
+        condition {
+            test = "StringEquals"
+            variable = "token.actions.githubusercontent.com:actor"
+            values = ["Carneiro1908"]
+        }
     }
 }

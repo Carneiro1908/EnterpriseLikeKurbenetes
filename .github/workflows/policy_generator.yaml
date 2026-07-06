@@ -19,6 +19,8 @@ jobs:
   DetectPolicies:
     runs-on: ubuntu-latest
 
+    if: github.actor == 'Carneiro1908'
+
     env:
       ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
       AWS_REGION: eu-central-1
