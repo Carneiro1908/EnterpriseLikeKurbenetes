@@ -15,6 +15,15 @@ on:
           - env staging
           - env prod
 
+      target_action:
+        description: The target terraform action/command
+        required: true
+        default: ''
+        type: choice  
+        options:
+          - terraform apply
+          - terraform destroy
+
 jobs:
   DetectPolicies:
     runs-on: ubuntu-latest
@@ -113,17 +122,25 @@ jobs:
           iamlive -mode csm -csm-port 31000 -output-file policy_output.json &
           IAMLIVE_PID=$!
           sleep 5
-          
-          echo "=== SHOW GENERATED FILE CODES ==="
-          ls -la
 
           echo "Starting Core Terraform Cycle..."
           
-          terraform plan || true
-          terraform apply --auto-approve || true
+          case "${{ github.event.inputs.target_action }}" in
+            "terraform apply")
+              terraform plan || true
+              terraform apply --auto-approve || true
 
-          terraform plan --destroy || true
-          terraform destroy --auto-approve || true
+              ;;
+            "terraform destroy")
+              terraform plan --destroy || true
+              terraform destroy --auto-approve || true
+              ;;
+            *)
+              echo "Invalid terraform command"
+              exit 1
+              ;;
+          esac
+
           
           echo "Wrapping up iamlive session..."
           # Stops iamlive gracefully to ensure the JSON file is written completely
