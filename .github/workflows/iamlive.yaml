@@ -36,26 +36,19 @@ jobs:
           terraform_version: 1.5.7
 
       - name: Install iamlive
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Necessário para o comando 'gh' funcionar
         run: |
-          # Obtém a URL de download da última versão para Linux amd64 via API do GitHub
-          DOWNLOAD_URL=$(curl -s https://api.github.com/repos/iann0036/iam-live/releases/latest \
-            | grep "browser_download_url" \
-            | grep "linux-amd64" \
-            | cut -d '"' -f 4)
-          
-          echo "Baixando de: $DOWNLOAD_URL"
-          
-          # Baixa o binário correto
-          curl -L -o iam-live.tar.gz "$DOWNLOAD_URL"
-          
-          # Descompacta o arquivo
-          tar -xvf iam-live.tar.gz
-          
-          # Move para um diretório local
+          # 1. Cria a pasta de destino
           mkdir -p $HOME/.iam-live
-          mv iam-live $HOME/.iam-live/
           
-          # Adiciona ao PATH do GitHub Actions
+          # 2. Baixa a versão mais recente do tar.gz para Linux AMD64 usando a CLI oficial do GitHub
+          gh release download --repo iann0036/iam-live --pattern "*linux-amd64.tar.gz"
+          
+          # 3. Extrai o binário DIRETAMENTE dentro da pasta criada
+          tar -xvf iam-live-*.tar.gz -C $HOME/.iam-live/
+          
+          # 4. Adiciona a pasta ao PATH do GitHub Actions
           echo "$HOME/.iam-live" >> $GITHUB_PATH
 
 
