@@ -90,8 +90,8 @@ jobs:
       # 3. Run the scan directly pointing to the selected directory
       - name: Run IAM Policy Autopilot
         run: |
-          iam-policy-autopilot \
-            --path "${{ steps.setdir.outputs.dir }}" \
+          iam-policy-autopilot scan \
+            --directory "${{ steps.setdir.outputs.dir }}" \
             --output policy_output.json
 
       - name: Upload Policy Artifact
