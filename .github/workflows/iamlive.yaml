@@ -42,10 +42,10 @@ jobs:
           # 1. Cria a pasta de destino
           mkdir -p $HOME/.iam-live
           
-          # 2. Baixa a versão mais recente do tar.gz para Linux AMD64 usando a CLI oficial do GitHub
-          gh release download --repo iann0036/iam-live --pattern "*linux-amd64.tar.gz"
+          # 2. Baixa o asset do Linux (usando 'Linux' com maiúscula)
+          gh release download --repo iann0036/iam-live --pattern "*Linux*"
           
-          # 3. Extrai o binário DIRETAMENTE dentro da pasta criada
+          # 3. Extrai o conteúdo independentemente do nome exato do arquivo baixado
           tar -xvf iam-live-*.tar.gz -C $HOME/.iam-live/
           
           # 4. Adiciona a pasta ao PATH do GitHub Actions
