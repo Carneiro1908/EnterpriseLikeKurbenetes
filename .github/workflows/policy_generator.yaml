@@ -114,6 +114,9 @@ jobs:
           IAMLIVE_PID=$!
           sleep 5
           
+          echo "=== SHOW GENERATED FILE CODES ==="
+          ls -la
+
           echo "Starting Core Terraform Cycle..."
           
           terraform plan || true
