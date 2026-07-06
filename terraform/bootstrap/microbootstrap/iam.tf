@@ -46,13 +46,21 @@ resource "aws_iam_policy" "permissionsterraformplan" {
         Version = "2012-10-17"
         Statement = [
             {
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:GetItem",
-                "dynamodb:PutItem",
-                "dynamodb:DeleteItem"
-            ],
-            "Resource": ["*"]
+                Effect: "Allow",
+                Action: [
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:DeleteItem"
+                    
+                ],
+                Resource: ["*"]
+            },
+            {
+                Effect: "Allow",
+                Action: [
+                    "kms:Decrypt",  "kms:GenerateDataKey"
+                ]
+                Resource: ["*"]
             }
         ]
     })
