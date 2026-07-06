@@ -127,12 +127,10 @@ jobs:
           
           case "${{ github.event.inputs.target_action }}" in
             "terraform apply")
-              terraform plan || true
               terraform apply --auto-approve || true
 
               ;;
             "terraform destroy")
-              terraform plan --destroy || true
               terraform destroy --auto-approve || true
               ;;
             *)
