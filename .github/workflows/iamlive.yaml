@@ -1,0 +1,96 @@
+name: Policy detector (iamlive)
+
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: The target infraestruture 
+        required: true
+        default: ''
+        type: choice  
+        options:
+          - main bootstrap
+          - main infra
+          - env dev
+          - env prod
+          - env stating
+jobs:
+  DetectPolicies:
+    runs-on: ubuntu-latest
+
+    env:
+      ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
+      AWS_REGION: eu-central-1
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+
+      - name: Install iamlive
+        run: |
+          curl -L https://github.com/ianmckay/iamlive/releases/download/v1.0.0/iamlive-linux-amd64.tar.gz | tar xvz
+          sudo mv iamlive /usr/local/bin/
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/iamlive-role
+          aws-region: ${{ env.AWS_REGION }}
+          audience: sts.amazonaws.com
+
+      - name: Select evironment
+        id: setdir
+        run: |
+          case "${{github.event.inputs.environment}}" in
+            main bootstrap)
+              echo "dir=./terraform/bootstrap/main_bootstrap" >> "$GITHUB_OUTPUT"
+              ;;
+            main infra)
+              echo "dir=./terraform/main_infra" >> "$GITHUB_OUTPUT"
+              ;;
+            dev)
+              echo "dir=./terraform/main_infra/env/dev" >> "$GITHUB_OUTPUT"
+              ;;
+            staging)
+              echo "dir=./terraform/main_infra/env/staging" >> "$GITHUB_OUTPUT"
+              ;;
+            prod)
+              echo "dir=./terraform/main_infra/env/prod" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Invalid environment: ${{ github.event.inputs.environment }}"
+              exit 1
+              ;;
+          esac
+
+      - name: Terraform Init
+        working-directory: ${{ steps.setdir.outputs.dir }}
+        run: terraform init
+
+      - name: Run iamlive and Terraform
+        run: |
+          # Inits iamlive in background and set a output file
+          iamlive -mode csm -csm-port 31000 -output-file policy_output.json &
+          echo "IAMLIVE_PID=$!" >> $GITHUB_ENV
+          sleep 2
+          
+          # Actives CSM and run terraform plan
+          export AWS_CSM_ENABLED=true
+          export AWS_CSM_PORT=31000
+          export AWS_CSM_HOST=127.0.0.1
+          
+          terraform plan
+          
+          # Shuts down iamlive and forces json save
+          kill -SIGINT $IAMLIVE_PID
+
+      - name: Upload Policy Artifact
+        uses: actions/artifacts@v4
+        with:
+          name: iam-policy
+          path: policy_output.json
