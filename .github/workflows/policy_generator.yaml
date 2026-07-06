@@ -1,4 +1,4 @@
-name: Policy detector (autopilot)
+name: Policy detector (iamlive)
 
 on: 
   workflow_dispatch:
@@ -36,16 +36,27 @@ jobs:
         with:
           terraform_version: 1.5.7
 
-      # 1. Set up the Python environment natively
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
+      # 1. Download iamlive using GitHub API directly to get the Linux AMD64 asset
+      - name: Install iamlive
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p $HOME/.iam-live
+          
+          # Downloads the latest release metadata and filters the asset URL for Linux AMD64
+          ASSET_URL=$(gh api repos/iann0036/iam-live/releases/latest --jq '.assets[] | select(.name | ascii_downcase | contains("linux") and contains("amd64")) | .browser_download_url')
+          
+          echo "Downloading from: $ASSET_URL"
+          curl -sL "$ASSET_URL" -o iam-live-linux.tar.gz
+          
+          # Extracts the binary into the destination folder
+          tar -xvf iam-live-linux.tar.gz -C $HOME/.iam-live/
+          chmod +x $HOME/.iam-live/*
+          
+          # Adds the folder to the GitHub Actions PATH
+          echo "$HOME/.iam-live" >> $GITHUB_PATH
 
-      # 2. Install the tool via PIP (automatically manages PATH)
-      - name: Install IAM Policy Autopilot
-        run: pip install iam-policy-autopilot
-
+      # 2. Configure AWS Credentials with your existing OIDC Role
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -53,6 +64,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           audience: sts.amazonaws.com
 
+      # 3. Dynamically map and select the environment folder matching the input options
       - name: Select environment
         id: setdir
         run: |
@@ -78,6 +90,7 @@ jobs:
               ;;
           esac
 
+      # 4. Initialize Terraform using your required S3 Backend Configuration variables
       - name: Terraform Init
         working-directory: ${{ steps.setdir.outputs.dir }}
         run: |
@@ -86,17 +99,27 @@ jobs:
             -backend-config="key=enviroment/bootstrap/terraform.tfstate" \
             -backend-config="region=${{ env.AWS_REGION }}"
 
-      # 3. Run the scan targeting only the Terraform files inside the selected directory
-      - name: Run IAM Policy Autopilot
+      # 5. Start iamlive, map Terraform execution via CSM, and save results
+      - name: Run iamlive and Terraform
         working-directory: ${{ steps.setdir.outputs.dir }}
         run: |
-          iam-policy-autopilot generate-policies \
-            --language python \
-            --tf-dir . \
-            --region "${{ env.AWS_REGION }}" \
-            --account "${{ env.ACCOUNT_ID }}" \
-            *.tf > policy_output.json
+          # Starts iamlive in background and outputs to a file inside the working directory
+          iamlive -mode csm -csm-port 31000 -output-file policy_output.json &
+          IAMLIVE_PID=$!
+          sleep 3
+          
+          # Enables AWS Client Side Monitoring (CSM) to intercept Terraform actions
+          export AWS_CSM_ENABLED=true
+          export AWS_CSM_PORT=31000
+          export AWS_CSM_HOST=127.0.0.1
+          
+          terraform plan
+          
+          # Stops iamlive gracefully to ensure the JSON file is written completely
+          kill -SIGINT $IAMLIVE_PID
+          sleep 2
 
+      # 6. Gather the generated JSON file from the specific environment workspace and upload it
       - name: Upload Policy Artifact
         uses: actions/upload-artifact@v4
         with:
