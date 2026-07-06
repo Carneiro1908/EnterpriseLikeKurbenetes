@@ -42,13 +42,16 @@ jobs:
           # 1. Cria a pasta de destino
           mkdir -p $HOME/.iam-live
           
-          # 2. Baixa o asset do Linux (usando 'Linux' com maiúscula)
-          gh release download --repo iann0036/iam-live --pattern "*Linux*"
+          # 2. Baixa o ZIP do Linux (independente de maiúsculas/minúsculas)
+          gh release download --repo iann0036/iam-live --pattern "*[lL]inux*.zip"
           
-          # 3. Extrai o conteúdo independentemente do nome exato do arquivo baixado
-          tar -xvf iam-live-*.tar.gz -C $HOME/.iam-live/
+          # 3. Extrai o arquivo zip direto para a pasta de destino
+          unzip iam-live-*.zip -d $HOME/.iam-live/
           
-          # 4. Adiciona a pasta ao PATH do GitHub Actions
+          # 4. Garante permissão de execução no binário extraído
+          chmod +x $HOME/.iam-live/*
+          
+          # 5. Adiciona a pasta ao PATH do GitHub Actions
           echo "$HOME/.iam-live" >> $GITHUB_PATH
 
 
