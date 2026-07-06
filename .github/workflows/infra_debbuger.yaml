@@ -1,4 +1,4 @@
-name: Policy detector (iamlive)
+name: Infraestruture debbuger
 
 on: 
   workflow_dispatch:
@@ -14,15 +14,6 @@ on:
           - env dev
           - env staging
           - env prod
-
-      target_action:
-        description: The target terraform action/command
-        required: true
-        default: ''
-        type: choice  
-        options:
-          - terraform apply
-          - terraform destroy
 
 jobs:
   DetectPolicies:
@@ -118,7 +109,7 @@ jobs:
           AWS_CSM_PORT: "31000"
           AWS_CSM_HOST: "127.0.0.1"
         run: |
-         # Sobe o iamlive em modo proxy (gera ca.pem/ca.key em ~/.iamlive/)
+         # Runs iamlive in proxy model
           iamlive -mode proxy -output-file policy_output.json -force-wildcard-resource=false &
           IAMLIVE_PID=$!
           sleep 5
@@ -129,18 +120,12 @@ jobs:
           export HTTPS_PROXY=http://127.0.0.1:10080
           export AWS_CA_BUNDLE=$HOME/.iamlive/ca.pem
 
-          case "${{ github.event.inputs.target_action }}" in
-            "terraform apply")
-              terraform apply --auto-approve || true
-              ;;
-            "terraform destroy")
-              terraform destroy --auto-approve || true
-              ;;
-            *)
-              echo "Invalid terraform command"
-              exit 1
-              ;;
-          esac
+          # Runs terraform commands
+          terraform plan
+          terraform apply --auto-approve || true
+          
+          terraform plan --destroy  
+          terraform destroy --auto-approve  || true  
 
           unset HTTP_PROXY HTTPS_PROXY AWS_CA_BUNDLE
 
