@@ -91,13 +91,11 @@ jobs:
       - name: Run IAM Policy Autopilot
         working-directory: ${{ steps.setdir.outputs.dir }}
         run: |
-          # Dynamic check to see available flags if needed
-          iam-policy-autopilot generate-policies --help
-          
-          # Actual execution command
           iam-policy-autopilot generate-policies \
-            --path "${{ steps.setdir.outputs.dir }}" \
-            --output policy_output.json
+            --tf-dir "${{ steps.setdir.outputs.dir }}" \
+            --region "${{ env.AWS_REGION }}" \
+            --account "${{ env.ACCOUNT_ID }}" \
+            "${{ steps.setdir.outputs.dir }}" > policy_output.json
 
       - name: Upload Policy Artifact
         uses: actions/upload-artifact@v4
