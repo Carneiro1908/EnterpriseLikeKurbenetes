@@ -3,13 +3,23 @@ name: Terraform Bootstrap Infrastructure CI/CD
 on:
   workflow_dispatch:
     inputs:
+      run_plan:
+          description: 'Run plan'
+          required: true
+          default: true
+          type: boolean
       run_apply:
-        description: 'Run apply step'
+        description: 'Run apply'
         required: true
         default: false
         type: boolean
+      run_plan_destroy:
+        description: 'Run plan destroy'
+        required: true
+        default: true
+        type: boolean
       run_destroy:
-        description: 'Run destroy step'
+        description: 'Run destroy'
         required: true
         default: false
         type: boolean
@@ -62,11 +72,16 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
+        if: ${{github.event.inputs.run_apply == 'true' || github.event.inputs.run_plan == 'true'}}
         run: terraform plan -input=false
 
       - name: Terraform Apply
         if: ${{ github.event.inputs.run_apply == 'true' }}
         run: terraform apply -auto-approve -input=false
+
+      - name: Terraform Plan destroy
+        if: ${{github.event.inputs.run_destroy == 'true' || github.event.inputs.run_plan_destroy = 'true'}})
+        run: terraform plan --destroy -input=false
 
       - name: Terraform Destroy
         if: ${{ github.event.inputs.run_destroy == 'true' }}

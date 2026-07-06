@@ -1,0 +1,44 @@
+name: Generate IAM Policy
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  iamlive-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Install iamlive
+      run: |
+        curl -L https://github.com/ianmckay/iamlive/releases/download/v1.0.0/iamlive-linux-amd64.tar.gz | tar xvz
+        sudo mv iamlive /usr/local/bin/
+
+    - name: Run iamlive and Terraform
+      run: |
+        # Inicia o iamlive em background enviando o output para um arquivo
+        iamlive -mode csm -csm-port 31000 -output-file policy_output.json &
+        echo "IAMLIVE_PID=$!" >> $GITHUB_ENV
+        sleep 2
+        
+        # Ativa o CSM e roda o Terraform Plan
+        export AWS_CSM_ENABLED=true
+        export AWS_CSM_PORT=31000
+        export AWS_CSM_HOST=127.0.0.1
+        
+        terraform init
+        terraform plan
+        
+        # Encerra o iamlive para forçar a gravação do JSON
+        kill -SIGINT $IAMLIVE_PID
+
+    - name: Upload Policy Artifact
+      uses: actions/artifacts@v4
+      with:
+        name: iam-policy
+        path: policy_output.json
