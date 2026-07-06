@@ -91,6 +91,7 @@ jobs:
         working-directory: ${{ steps.setdir.outputs.dir }}
         run: |
           iam-policy-autopilot generate-policies \
+            --language python \
             --tf-dir . \
             --region "${{ env.AWS_REGION }}" \
             --account "${{ env.ACCOUNT_ID }}" \
