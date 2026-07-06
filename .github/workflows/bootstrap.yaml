@@ -6,7 +6,7 @@ on:
       run_plan:
         description: 'Run plan'
         required: true
-        default: true
+        default: false
         type: boolean
       run_apply:
         description: 'Run apply'
@@ -16,7 +16,7 @@ on:
       run_plan_destroy:
         description: 'Run plan destroy'
         required: true
-        default: true
+        default: false
         type: boolean
       run_destroy:
         description: 'Run destroy'
