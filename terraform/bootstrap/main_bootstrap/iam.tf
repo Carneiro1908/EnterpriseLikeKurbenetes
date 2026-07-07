@@ -165,6 +165,8 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "ec2:DescribeAddressesAttribute",
                     "ec2:DescribeFlowLogs",
                     "iam:GetPolicy",
+                    "iam:TagRole",
+                    "ec2:CreateTags",
                     "ec2:DescribeNatGateways",
                     "iam:GetPolicyVersion"
                 ],
@@ -225,6 +227,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "s3:PutBucketPublicAccessBlock",
                     "s3:PutBucketVersioning",
                     "s3:PutEncryptionConfiguration",
+                    "s3:PutObject",
                     "s3:DeleteBucket"
                 ],
                 "Resource": "arn:aws:s3:::terraform-main-infra-bucket-eu-central-1"
