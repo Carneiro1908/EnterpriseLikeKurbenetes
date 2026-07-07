@@ -123,6 +123,8 @@ jobs:
           # Runs terraform commands
           terraform apply --auto-approve || true
           
+          sleep 120
+
           terraform destroy --auto-approve  || true  
 
           unset HTTP_PROXY HTTPS_PROXY AWS_CA_BUNDLE
