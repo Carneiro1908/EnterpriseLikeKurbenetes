@@ -109,19 +109,19 @@ jobs:
       - name: Terraform Plan
         working-directory: ${{ steps.setdir.outputs.dir }}
         if: ${{github.event.inputs.run_apply == 'true' || github.event.inputs.run_plan == 'true'}}
-        run: terraform plan -input=false
+        run: terraform plan 
 
       - name: Terraform Apply
         working-directory: ${{ steps.setdir.outputs.dir }}
         if: ${{ github.event.inputs.run_apply == 'true' }}
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply -auto-approve 
 
       - name: Terraform Plan destroy
         working-directory: ${{ steps.setdir.outputs.dir }}
         if: ${{github.event.inputs.run_destroy == 'true' || github.event.inputs.run_plan_destroy == 'true'}}
-        run: terraform plan --destroy -input=false
+        run: terraform plan --destroy 
 
       - name: Terraform Destroy
         working-directory: ${{ steps.setdir.outputs.dir }}
         if: ${{ github.event.inputs.run_destroy == 'true' }}
-        run: terraform destroy -auto-approve -input=false
+        run: terraform destroy -auto-approve 
