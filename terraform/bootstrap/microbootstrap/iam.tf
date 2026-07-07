@@ -37,6 +37,7 @@ resource "aws_iam_policy" "bootstrap_policy" {
                 "iam:GetPolicyVersion",
                 "ec2:DescribeNetworkInterfaces",
                 "kms:CreateKey",
+                "kms:Decrypt",
                 "iam:ListPolicyVersions",
                 "iam:DeletePolicy",
                 "ec2:ReleaseAddress"
