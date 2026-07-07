@@ -28,6 +28,7 @@ resource "aws_iam_policy" "bootstrap_policy" {
                 "ec2:DescribeInternetGateways",
                 "ec2:DescribeSubnets",
                 "logs:DescribeLogGroups",
+                "iam:DeletePolicyVersion",
                 "ec2:DescribeAddressesAttribute",
                 "ec2:DescribeFlowLogs",
                 "ec2:DescribeSecurityGroups",
@@ -184,7 +185,6 @@ resource "aws_iam_policy" "bootstrap_policy2" {
                 "ecr:GetLifecyclePolicy",
                 "ecr:DeleteLifecyclePolicy",
                 "ecr:DeleteRepository",
-                "iam:DeletePolicyVersion"
             ],
             "Resource": "arn:aws:ecr:eu-central-1:547320736290:repository/app-container-repository"
         },
