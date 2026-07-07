@@ -183,7 +183,8 @@ resource "aws_iam_policy" "bootstrap_policy2" {
                 "ecr:ListTagsForResource",
                 "ecr:GetLifecyclePolicy",
                 "ecr:DeleteLifecyclePolicy",
-                "ecr:DeleteRepository"
+                "ecr:DeleteRepository",
+                "iam:DeletePolicyVersion"
             ],
             "Resource": "arn:aws:ecr:eu-central-1:547320736290:repository/app-container-repository"
         },
