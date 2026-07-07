@@ -45,12 +45,8 @@ concurrency:
 
 jobs:
   terraform:
-    name: Terraform Bootstrap Infrastructure
+    name: Terraform Infrastructure
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: terraform/bootstrap/main_bootstrap
 
     env:
       ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
@@ -73,6 +69,7 @@ jobs:
           audience: sts.amazonaws.com
     
       - name: Select Environment
+        id: setdir
         run: |
           case "${{ github.event.inputs.environment }}" in
             "main bootstrap")
