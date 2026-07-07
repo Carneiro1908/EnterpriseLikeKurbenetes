@@ -1,7 +1,7 @@
 # prod vpc
-module "vpc" {
+module "prod_env_vpc" {
     source = "terraform-aws-modules/vpc/aws"
-    version = "~> 5.0."
+    version = "~> 5.0"
 
     name = "prod_env_vpc"
     cidr = "10.0.0.0/16"
@@ -29,8 +29,10 @@ module "vpc" {
 }
 
 # test environment vpc
-module "vpc" {
+module "test_env_vpc" {
     source = "terraform-aws-modules/vpc/aws"
+    
+    version = "~> 5.0"
 
     name = "test_env_vpc"
     cidr = "10.1.0.0/16"
