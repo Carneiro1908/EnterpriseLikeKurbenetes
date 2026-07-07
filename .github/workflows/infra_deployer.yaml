@@ -104,6 +104,7 @@ jobs:
         run: terraform validate
 
       - name: DebugChecker
+        working-directory: ${{ steps.setdir.outputs.dir }}
         run: |
           echo ${{ steps.setdir.outputs.dir }}; 
           ls
