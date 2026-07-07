@@ -41,7 +41,8 @@ resource "aws_iam_policy" "bootstrap_policy" {
                 "kms:CreateKey",
                 "iam:ListPolicyVersions",
                 "iam:DeletePolicy",
-                "ec2:ReleaseAddress"
+                "ec2:ReleaseAddress",
+                "kms:CreateGrant"
             ],
             "Resource": "*"
         },

@@ -34,7 +34,7 @@ resource "aws_iam_policy" "github_main_infra_policy" {
                     "s3:PutBucketPublicAccessBlock",
                     "s3:GetBucketPublicAccessBlock"
                 ],
-                "Resource": "arn:aws:s3:::terraform-env-dev-bucket-eu-central-1"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -42,8 +42,7 @@ resource "aws_iam_policy" "github_main_infra_policy" {
                     "ec2:CreateSubnet"
                 ],
                 "Resource": [
-                    "arn:aws:ec2:eu-central-1:547320736290:subnet/*",
-                    "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
+                    "*"
                 ]
             },
             {
@@ -52,8 +51,7 @@ resource "aws_iam_policy" "github_main_infra_policy" {
                     "ec2:CreateRouteTable"
                 ],
                 "Resource": [
-                    "arn:aws:ec2:eu-central-1:547320736290:route-table/*",
-                    "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
+                    "*"
                 ]
             },
             {
@@ -62,7 +60,7 @@ resource "aws_iam_policy" "github_main_infra_policy" {
                     "ec2:DeleteNetworkAclEntry",
                     "ec2:CreateNetworkAclEntry"
                 ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:network-acl/*"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -70,14 +68,14 @@ resource "aws_iam_policy" "github_main_infra_policy" {
                     "ec2:RevokeSecurityGroupEgress",
                     "ec2:RevokeSecurityGroupIngress"
                 ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:security-group/*"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
                 "Action": [
                     "ec2:CreateInternetGateway"
                 ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:internet-gateway/*"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -85,8 +83,7 @@ resource "aws_iam_policy" "github_main_infra_policy" {
                     "ec2:AttachInternetGateway"
                 ],
                 "Resource": [
-                    "arn:aws:ec2:eu-central-1:547320736290:internet-gateway/*",
-                    "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
+                    "*"
                 ]
             },
             {
@@ -95,7 +92,7 @@ resource "aws_iam_policy" "github_main_infra_policy" {
                     "logs:CreateLogGroup",
                     "logs:ListTagsForResource"
                 ],
-                "Resource": "arn:aws:logs:eu-central-1:547320736290:log-group:/aws/vpc-flow-log/vpc-037eaef4c80501c2e"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -103,14 +100,14 @@ resource "aws_iam_policy" "github_main_infra_policy" {
                     "ec2:AssociateRouteTable",
                     "ec2:CreateRoute"
                 ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:route-table/*"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
                 "Action": [
                     "ec2:AllocateAddress"
                 ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:elastic-ip/*"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -118,10 +115,7 @@ resource "aws_iam_policy" "github_main_infra_policy" {
                     "ec2:CreateFlowLogs"
                 ],
                 "Resource": [
-                    "arn:aws:ec2:eu-central-1:547320736290:network-interface/*",
-                    "arn:aws:ec2:eu-central-1:547320736290:subnet/*",
-                    "arn:aws:ec2:eu-central-1:547320736290:vpc-flow-log/*",
-                    "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
+                    "*"
                 ]
             },
             {
@@ -129,14 +123,14 @@ resource "aws_iam_policy" "github_main_infra_policy" {
                 "Action": [
                     "iam:CreatePolicy"
                 ],
-                "Resource": "arn:aws:iam::547320736290:policy/*"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
                 "Action": [
                     "ec2:CreateNatGateway"
                 ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:natgateway/*"
+                "Resource": "*"
             }
         ]
     })
@@ -182,7 +176,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                 "Action": [
                     "s3:ListBucket"
                 ],
-                "Resource": "arn:aws:s3:::terraform-main-github_main_infra-bucket-eu-central-1"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -199,7 +193,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "s3:ListMultipartUploadParts",
                     "s3:PutObject"
                 ],
-                "Resource": "arn:aws:s3:::terraform-main-github_main_infra-bucket-eu-central-1/enviroment/github_main_infra/terraform.tfstate"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -210,7 +204,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "kms:ListResourceTags",
                     "kms:ScheduleKeyDeletion"
                 ],
-                "Resource": "arn:aws:kms:eu-central-1:547320736290:key/97f226da-5643-4490-a832-5a8458e88f91"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -249,7 +243,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "iam:DeleteRole",
                     "iam:AttachRolePolicy"
                 ],
-                "Resource": "arn:aws:iam::547320736290:role/*"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -259,21 +253,21 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "dynamodb:DescribeTimeToLive",
                     "dynamodb:DeleteTable"
                 ],
-                "Resource": "arn:aws:dynamodb:eu-central-1:547320736290:table/main_infra_table"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
                 "Action": [
                     "kms:DescribeKey"
                 ],
-                "Resource": "arn:aws:kms:eu-central-1:547320736290:key/alias/aws/dynamodb"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
                 "Action": [
                     "s3:ListTagsForResource"
                 ],
-                "Resource": "arn:aws:s3:eu-central-1:547320736290:access-grants/default"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -284,7 +278,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "ecr:PutLifecyclePolicy",
                     "ecr:GetLifecyclePolicy"
                 ],
-                "Resource": "arn:aws:ecr:eu-central-1:547320736290:repository/app-container-repository"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -308,7 +302,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "s3:PutBucketPublicAccessBlock",
                     "s3:GetBucketPublicAccessBlock"
                 ],
-                "Resource": "arn:aws:s3:::terraform-env-prod-bucket-eu-central-1"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -317,7 +311,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "ec2:ModifyVpcAttribute",
                     "ec2:DescribeVpcAttribute"
                 ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
+                "Resource": "*"
             },
             {
                 "Effect": "Allow",
@@ -341,7 +335,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "s3:PutBucketPublicAccessBlock",
                     "s3:GetBucketPublicAccessBlock"
                 ],
-                "Resource": "arn:aws:s3:::terraform-env-staging-bucket-eu-central-1"
+                "Resource": "*"
             },
         ]
     })
