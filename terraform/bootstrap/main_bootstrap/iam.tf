@@ -184,7 +184,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "dynamodb:GetItem",
                     "dynamodb:DeleteItem"
                 ],
-                "Resource": "arn:aws:dynamodb:eu-central-1:547320736290:table/main_github_main_infra_table"
+                "Resource": ["*"]
             },
             {
                 "Effect": "Allow",

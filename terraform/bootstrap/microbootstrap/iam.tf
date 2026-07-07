@@ -34,6 +34,7 @@ resource "aws_iam_policy" "bootstrap_policy" {
                 "ec2:DescribeVpcs",
                 "ec2:DescribeNetworkAcls",
                 "iam:GetPolicy",
+                "iam:CreatePolicyVersion",
                 "iam:GetPolicyVersion",
                 "ec2:DescribeNetworkInterfaces",
                 "kms:CreateKey",
