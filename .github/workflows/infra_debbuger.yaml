@@ -121,10 +121,8 @@ jobs:
           export AWS_CA_BUNDLE=$HOME/.iamlive/ca.pem
 
           # Runs terraform commands
-          terraform plan
           terraform apply --auto-approve || true
           
-          terraform plan --destroy  
           terraform destroy --auto-approve  || true  
 
           unset HTTP_PROXY HTTPS_PROXY AWS_CA_BUNDLE
