@@ -54,7 +54,7 @@ resource "aws_iam_policy" "bootstrap_policy" {
       {
         Effect   = "Allow"
         Action   = ["kms:DescribeKey", "kms:GetKeyPolicy", "kms:GetKeyRotationStatus", "kms:ListResourceTags", "kms:ScheduleKeyDeletion"]
-        Resource = "arn:aws:kms:eu-central-1:547320736290:key/0b38348b-a8c6-4817-9fb2-de18485c145f"
+        Resource = ["*"]
       },
       {
         Effect   = "Allow"
