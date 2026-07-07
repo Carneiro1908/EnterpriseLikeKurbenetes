@@ -51,6 +51,7 @@ jobs:
     env:
       ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
       AWS_REGION: eu-central-1
+      ROLE_NAME: ""
 
     steps:
       - name: Checkout repository
@@ -61,22 +62,17 @@ jobs:
         with:
           terraform_version: 1.5.7
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/terraform-bootstrap-role
-          aws-region: ${{ env.AWS_REGION }}
-          audience: sts.amazonaws.com
-    
       - name: Select Environment
         id: setdir
         run: |
           case "${{ github.event.inputs.environment }}" in
             "main bootstrap")
               echo "dir=./terraform/bootstrap/main_bootstrap" >> "$GITHUB_OUTPUT"
+              echo "ROLE_NAME=terraform-bootstrap-role" >> "$GITHUB_ENV"
               ;;
             "main infra")
               echo "dir=./terraform/main_infra" >> "$GITHUB_OUTPUT"
+              echo "ROLE_NAME=github_main_infra_role" >> "$GITHUB_ENV"
               ;;
             "env dev")
               echo "dir=./terraform/main_infra/env/dev" >> "$GITHUB_OUTPUT"
@@ -92,6 +88,13 @@ jobs:
               exit 1
               ;;
           esac
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/${{env.ROLE_NAME}}
+          aws-region: ${{ env.AWS_REGION }}
+          audience: sts.amazonaws.com
 
       - name: Terraform Init
         working-directory: ${{ steps.setdir.outputs.dir }}
