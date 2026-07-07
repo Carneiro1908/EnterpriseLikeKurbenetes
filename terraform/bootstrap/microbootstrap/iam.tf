@@ -341,7 +341,7 @@ resource "aws_iam_policy" "bootstrap_policy3" {
       {
         "Effect": "Allow",
         "Action": [
-          "kms:Decrypy",
+          "kms:Decrypt",
           "dynamodb:ListTagsOfResource",
           "s3:GetBucketTagging"
         ],

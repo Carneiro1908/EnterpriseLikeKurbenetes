@@ -11,6 +11,142 @@ resource "aws_iam_policy" "github_main_infra_policy" {
     policy = jsonencode( {
         "Version": "2012-10-17",
         "Statement": [
+            
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "s3:CreateBucket",
+                    "s3:ListBucket",
+                    "s3:GetBucketPolicy",
+                    "s3:GetBucketAcl",
+                    "s3:GetBucketCORS",
+                    "s3:GetBucketWebsite",
+                    "s3:GetBucketVersioning",
+                    "s3:GetAccelerateConfiguration",
+                    "s3:GetBucketRequestPayment",
+                    "s3:GetBucketLogging",
+                    "s3:GetLifecycleConfiguration",
+                    "s3:GetReplicationConfiguration",
+                    "s3:GetEncryptionConfiguration",
+                    "s3:GetBucketObjectLockConfiguration",
+                    "s3:PutEncryptionConfiguration",
+                    "s3:PutBucketVersioning",
+                    "s3:PutBucketPublicAccessBlock",
+                    "s3:GetBucketPublicAccessBlock"
+                ],
+                "Resource": "arn:aws:s3:::terraform-env-dev-bucket-eu-central-1"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:CreateSubnet"
+                ],
+                "Resource": [
+                    "arn:aws:ec2:eu-central-1:547320736290:subnet/*",
+                    "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
+                ]
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:CreateRouteTable"
+                ],
+                "Resource": [
+                    "arn:aws:ec2:eu-central-1:547320736290:route-table/*",
+                    "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
+                ]
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:DeleteNetworkAclEntry",
+                    "ec2:CreateNetworkAclEntry"
+                ],
+                "Resource": "arn:aws:ec2:eu-central-1:547320736290:network-acl/*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:RevokeSecurityGroupEgress",
+                    "ec2:RevokeSecurityGroupIngress"
+                ],
+                "Resource": "arn:aws:ec2:eu-central-1:547320736290:security-group/*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:CreateInternetGateway"
+                ],
+                "Resource": "arn:aws:ec2:eu-central-1:547320736290:internet-gateway/*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:AttachInternetGateway"
+                ],
+                "Resource": [
+                    "arn:aws:ec2:eu-central-1:547320736290:internet-gateway/*",
+                    "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
+                ]
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:ListTagsForResource"
+                ],
+                "Resource": "arn:aws:logs:eu-central-1:547320736290:log-group:/aws/vpc-flow-log/vpc-037eaef4c80501c2e"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:AssociateRouteTable",
+                    "ec2:CreateRoute"
+                ],
+                "Resource": "arn:aws:ec2:eu-central-1:547320736290:route-table/*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:AllocateAddress"
+                ],
+                "Resource": "arn:aws:ec2:eu-central-1:547320736290:elastic-ip/*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:CreateFlowLogs"
+                ],
+                "Resource": [
+                    "arn:aws:ec2:eu-central-1:547320736290:network-interface/*",
+                    "arn:aws:ec2:eu-central-1:547320736290:subnet/*",
+                    "arn:aws:ec2:eu-central-1:547320736290:vpc-flow-log/*",
+                    "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
+                ]
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "iam:CreatePolicy"
+                ],
+                "Resource": "arn:aws:iam::547320736290:policy/*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "ec2:CreateNatGateway"
+                ],
+                "Resource": "arn:aws:ec2:eu-central-1:547320736290:natgateway/*"
+            }
+        ]
+    })
+}
+resource "aws_iam_policy" "github_main_infra_policy2" {
+    name = "github-main-infra-policy-2"
+
+    policy = jsonencode( {
+        "Version": "2012-10-17",
+        "Statement": [
             {
                 "Effect": "Allow",
                 "Action": [
@@ -199,132 +335,6 @@ resource "aws_iam_policy" "github_main_infra_policy" {
                 ],
                 "Resource": "arn:aws:s3:::terraform-env-staging-bucket-eu-central-1"
             },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "s3:CreateBucket",
-                    "s3:ListBucket",
-                    "s3:GetBucketPolicy",
-                    "s3:GetBucketAcl",
-                    "s3:GetBucketCORS",
-                    "s3:GetBucketWebsite",
-                    "s3:GetBucketVersioning",
-                    "s3:GetAccelerateConfiguration",
-                    "s3:GetBucketRequestPayment",
-                    "s3:GetBucketLogging",
-                    "s3:GetLifecycleConfiguration",
-                    "s3:GetReplicationConfiguration",
-                    "s3:GetEncryptionConfiguration",
-                    "s3:GetBucketObjectLockConfiguration",
-                    "s3:PutEncryptionConfiguration",
-                    "s3:PutBucketVersioning",
-                    "s3:PutBucketPublicAccessBlock",
-                    "s3:GetBucketPublicAccessBlock"
-                ],
-                "Resource": "arn:aws:s3:::terraform-env-dev-bucket-eu-central-1"
-            },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "ec2:CreateSubnet"
-                ],
-                "Resource": [
-                    "arn:aws:ec2:eu-central-1:547320736290:subnet/*",
-                    "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
-                ]
-            },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "ec2:CreateRouteTable"
-                ],
-                "Resource": [
-                    "arn:aws:ec2:eu-central-1:547320736290:route-table/*",
-                    "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
-                ]
-            },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "ec2:DeleteNetworkAclEntry",
-                    "ec2:CreateNetworkAclEntry"
-                ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:network-acl/*"
-            },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "ec2:RevokeSecurityGroupEgress",
-                    "ec2:RevokeSecurityGroupIngress"
-                ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:security-group/*"
-            },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "ec2:CreateInternetGateway"
-                ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:internet-gateway/*"
-            },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "ec2:AttachInternetGateway"
-                ],
-                "Resource": [
-                    "arn:aws:ec2:eu-central-1:547320736290:internet-gateway/*",
-                    "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
-                ]
-            },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "logs:CreateLogGroup",
-                    "logs:ListTagsForResource"
-                ],
-                "Resource": "arn:aws:logs:eu-central-1:547320736290:log-group:/aws/vpc-flow-log/vpc-037eaef4c80501c2e"
-            },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "ec2:AssociateRouteTable",
-                    "ec2:CreateRoute"
-                ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:route-table/*"
-            },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "ec2:AllocateAddress"
-                ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:elastic-ip/*"
-            },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "ec2:CreateFlowLogs"
-                ],
-                "Resource": [
-                    "arn:aws:ec2:eu-central-1:547320736290:network-interface/*",
-                    "arn:aws:ec2:eu-central-1:547320736290:subnet/*",
-                    "arn:aws:ec2:eu-central-1:547320736290:vpc-flow-log/*",
-                    "arn:aws:ec2:eu-central-1:547320736290:vpc/*"
-                ]
-            },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "iam:CreatePolicy"
-                ],
-                "Resource": "arn:aws:iam::547320736290:policy/*"
-            },
-            {
-                "Effect": "Allow",
-                "Action": [
-                    "ec2:CreateNatGateway"
-                ],
-                "Resource": "arn:aws:ec2:eu-central-1:547320736290:natgateway/*"
-            }
         ]
     })
 }
