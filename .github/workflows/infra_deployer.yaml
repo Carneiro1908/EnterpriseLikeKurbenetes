@@ -1,4 +1,4 @@
-name: Terraform Bootstrap Infrastructure CI/CD
+name: Terraform Infrastructure CI/CD
 
 on:
   workflow_dispatch:
@@ -23,6 +23,17 @@ on:
         required: true
         default: false
         type: boolean
+      environment:
+        description: "Target infraestruture environment"
+        required: true 
+        default: ''
+        type: choice  
+        options:
+          - main bootstrap
+          - main infra
+          - env dev
+          - env staging
+          - env prod
 
 permissions:
   id-token: write
@@ -60,8 +71,33 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/terraform-bootstrap-role
           aws-region: ${{ env.AWS_REGION }}
           audience: sts.amazonaws.com
+    
+      - name: Select Environment
+        run: |
+          case "${{ github.event.inputs.environment }}" in
+            "main bootstrap")
+              echo "dir=./terraform/bootstrap/main_bootstrap" >> "$GITHUB_OUTPUT"
+              ;;
+            "main infra")
+              echo "dir=./terraform/main_infra" >> "$GITHUB_OUTPUT"
+              ;;
+            "env dev")
+              echo "dir=./terraform/main_infra/env/dev" >> "$GITHUB_OUTPUT"
+              ;;
+            "env staging")
+              echo "dir=./terraform/main_infra/env/staging" >> "$GITHUB_OUTPUT"
+              ;;
+            "env prod")
+              echo "dir=./terraform/main_infra/env/prod" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Invalid environment: ${{ github.event.inputs.environment }}"
+              exit 1
+              ;;
+          esac
 
       - name: Terraform Init
+        working-directory: ${{ steps.setdir.outputs.dir }}
         run: |
             terraform init \
             -backend-config="bucket=terraform-main-bootstrap-bucket-${{ env.AWS_REGION }}" \
@@ -69,20 +105,25 @@ jobs:
             -backend-config="region=${{ env.AWS_REGION }}"
 
       - name: Terraform Validate
+        working-directory: ${{ steps.setdir.outputs.dir }}
         run: terraform validate
 
       - name: Terraform Plan
+        working-directory: ${{ steps.setdir.outputs.dir }}
         if: ${{github.event.inputs.run_apply == 'true' || github.event.inputs.run_plan == 'true'}}
         run: terraform plan -input=false
 
       - name: Terraform Apply
+        working-directory: ${{ steps.setdir.outputs.dir }}
         if: ${{ github.event.inputs.run_apply == 'true' }}
         run: terraform apply -auto-approve -input=false
 
       - name: Terraform Plan destroy
+        working-directory: ${{ steps.setdir.outputs.dir }}
         if: ${{github.event.inputs.run_destroy == 'true' || github.event.inputs.run_plan_destroy == 'true'}}
         run: terraform plan --destroy -input=false
 
       - name: Terraform Destroy
+        working-directory: ${{ steps.setdir.outputs.dir }}
         if: ${{ github.event.inputs.run_destroy == 'true' }}
         run: terraform destroy -auto-approve -input=false
