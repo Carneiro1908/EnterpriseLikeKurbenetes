@@ -3,7 +3,7 @@ resource "aws_s3_bucket" "main_infra_bucket" {
     bucket = "terraform-main-infra-bucket-${var.region}"
 
     lifecycle {
-        prevent_destroy = false
+        prevent_destroy = true
     }
 }
 
