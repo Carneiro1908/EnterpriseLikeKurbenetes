@@ -16,67 +16,135 @@ resource "aws_iam_policy" "bootstrap_policy" {
   description = "Policy for main bootstrap"
 
   policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect   = "Allow"
-        Action   = ["sts:GetCallerIdentity", "iam:GetPolicy", "iam:GetPolicyVersion", "iam:ListPolicyVersions", "iam:DeletePolicy"]
-        Resource = "*"
-      },
-      {
-        Effect   = "Allow"
-        Action   = ["s3:ListBucket"]
-        Resource = "arn:aws:s3:::terraform-main-bootstrap-bucket-eu-central-1"
-      },
-      {
-        Effect   = "Allow"
-        Action   = ["dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:DeleteItem"]
-        Resource = "arn:aws:dynamodb:eu-central-1:547320736290:table/main_bootstrap_table"
-      },
-      {
-        Effect   = "Allow"
-        Action   = ["s3:GetObject", "s3:ListMultipartUploadParts", "s3:PutObject"]
-        Resource = "arn:aws:s3:::terraform-main-bootstrap-bucket-eu-central-1/enviroment/bootstrap/terraform.tfstate"
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket", "s3:GetBucketPolicy", "s3:GetBucketAcl", "s3:GetBucketCORS",
-          "s3:GetBucketWebsite", "s3:GetBucketVersioning", "s3:GetAccelerateConfiguration",
-          "s3:GetBucketRequestPayment", "s3:GetBucketLogging", "s3:GetLifecycleConfiguration",
-          "s3:GetReplicationConfiguration", "s3:GetEncryptionConfiguration",
-          "s3:GetBucketObjectLockConfiguration", "s3:GetBucketPublicAccessBlock",
-          "s3:PutBucketVersioning", "s3:PutBucketPublicAccessBlock",
-          "s3:PutEncryptionConfiguration", "s3:DeleteBucket"
-        ]
-        Resource = "arn:aws:s3:::terraform-main-infra-bucket-eu-central-1"
-      },
-      {
-        Effect   = "Allow"
-        Action   = ["kms:DescribeKey", "kms:GetKeyPolicy", "kms:GetKeyRotationStatus", "kms:ListResourceTags", "kms:ScheduleKeyDeletion", "kms:Decrypt"]
-        Resource = ["*"]
-      },
-      {
-        Effect   = "Allow"
-        Action   = ["iam:GetRole", "iam:ListRolePolicies", "iam:ListAttachedRolePolicies", "iam:DetachRolePolicy", "iam:ListInstanceProfilesForRole", "iam:DeleteRole"]
-        Resource = "arn:aws:iam::547320736290:role/*"
-      },
-      {
-        Effect   = "Allow"
-        Action   = ["dynamodb:DescribeTable", "dynamodb:DescribeContinuousBackups", "dynamodb:DescribeTimeToLive", "dynamodb:DeleteTable"]
-        Resource = "arn:aws:dynamodb:eu-central-1:547320736290:table/main_infra_table"
-      },
-      {
-        Effect   = "Allow"
-        Action   = ["kms:DescribeKey"]
-        Resource = "arn:aws:kms:eu-central-1:547320736290:key/alias/aws/dynamodb"
-      },
-      {
-        Effect   = "Allow"
-        Action   = ["s3:ListTagsForResource"]
-        Resource = "arn:aws:s3:eu-central-1:547320736290:access-grants/default"
-      }
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sts:GetCallerIdentity",
+                "kms:CreateKey",
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:CreateGrant",
+                "iam:GetPolicy",
+                "iam:GetPolicyVersion",
+                "iam:ListPolicyVersions",
+                "iam:DeletePolicy"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": "arn:aws:s3:::terraform-main-bootstrap-bucket-eu-central-1"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:GetItem",
+                "dynamodb:DeleteItem"
+            ],
+            "Resource": "arn:aws:dynamodb:eu-central-1:${local.account_id}:table/main_bootstrap_table"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": "arn:aws:s3:::terraform-main-bootstrap-bucket-eu-central-1/enviroment/bootstrap/terraform.tfstate"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreatePolicy"
+            ],
+            "Resource": "arn:aws:iam::${local.account_id}:policy/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreateRole",
+                "iam:GetRole",
+                "iam:ListRolePolicies",
+                "iam:ListAttachedRolePolicies",
+                "iam:AttachRolePolicy",
+                "iam:DetachRolePolicy",
+                "iam:ListInstanceProfilesForRole",
+                "iam:DeleteRole"
+            ],
+            "Resource": "arn:aws:iam::${local.account_id}:role/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:CreateBucket",
+                "s3:ListBucket",
+                "s3:GetBucketPolicy",
+                "s3:GetBucketAcl",
+                "s3:GetBucketCORS",
+                "s3:GetBucketWebsite",
+                "s3:GetBucketVersioning",
+                "s3:GetAccelerateConfiguration",
+                "s3:GetBucketRequestPayment",
+                "s3:GetBucketLogging",
+                "s3:GetLifecycleConfiguration",
+                "s3:GetReplicationConfiguration",
+                "s3:GetEncryptionConfiguration",
+                "s3:GetBucketObjectLockConfiguration",
+                "s3:PutEncryptionConfiguration",
+                "s3:PutBucketPublicAccessBlock",
+                "s3:PutBucketVersioning",
+                "s3:GetBucketPublicAccessBlock",
+                "s3:DeleteBucket",
+                "s3:GetBucketTagging"
+            ],
+            "Resource": "arn:aws:s3:::terraform-main-infra-bucket-eu-central-1"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kms:EnableKeyRotation",
+                "kms:GetKeyRotationStatus",
+                "kms:DescribeKey",
+                "kms:GetKeyPolicy",
+                "kms:ListResourceTags",
+                "kms:ScheduleKeyDeletion"
+            ],
+            "Resource": ["*"]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:CreateTable",
+                "dynamodb:DescribeTable",
+                "dynamodb:UpdateContinuousBackups",
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DeleteTable",
+                "dynamodb:ListTagsOfResource"
+            ],
+            "Resource": "arn:aws:dynamodb:eu-central-1:${local.account_id}:table/main_infra_table"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListTagsForResource"
+            ],
+            "Resource": "arn:aws:s3:eu-central-1:${local.account_id}:access-grants/default"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kms:DescribeKey"
+            ],
+            "Resource": ["*"]
+        }
     ]
+    
   })
 }
 
