@@ -175,7 +175,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                 "Action": [
                     "s3:ListBucket"
                 ],
-                "Resource": "arn:aws:s3:::terraform-main-bootstrap-bucket-eu-central-1"
+                "Resource": "arn:aws:s3:::terraform-main-github_main_infra-bucket-eu-central-1"
             },
             {
                 "Effect": "Allow",
@@ -184,7 +184,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "dynamodb:GetItem",
                     "dynamodb:DeleteItem"
                 ],
-                "Resource": "arn:aws:dynamodb:eu-central-1:547320736290:table/main_bootstrap_table"
+                "Resource": "arn:aws:dynamodb:eu-central-1:547320736290:table/main_github_main_infra_table"
             },
             {
                 "Effect": "Allow",
@@ -192,7 +192,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "s3:ListMultipartUploadParts",
                     "s3:PutObject"
                 ],
-                "Resource": "arn:aws:s3:::terraform-main-bootstrap-bucket-eu-central-1/enviroment/bootstrap/terraform.tfstate"
+                "Resource": "arn:aws:s3:::terraform-main-github_main_infra-bucket-eu-central-1/enviroment/github_main_infra/terraform.tfstate"
             },
             {
                 "Effect": "Allow",
@@ -338,8 +338,36 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
         ]
     })
 }
+resource "aws_iam_policy" "github_main_infra_policy3" {
+  name = "github-main-infra-policy-3"
+
+  policy = jsonencode({
+    Version: "2012-10-17",
+    Statement: [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "kms:Decrypt",
+          "dynamodb:ListTagsOfResource",
+          "s3:GetBucketTagging"
+        ],
+        "Resource": ["*"]
+      }
+    ]
+  })
+}
+
+# attachments
 
 resource "aws_iam_role_policy_attachment" "github_main_infra_role_policy_attachment" {
     role = aws_iam_role.github_main_infra_role.name
-    policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+    policy_arn = aws_iam_policy.github_main_infra_policy.arn
+}
+resource "aws_iam_role_policy_attachment" "github_main_infra_role_policy_attachment2" {
+    role = aws_iam_role.github_main_infra_role.name
+    policy_arn = aws_iam_policy.github_main_infra_policy2.arn
+}
+resource "aws_iam_role_policy_attachment" "github_main_infra_role_policy_attachment3" {
+    role = aws_iam_role.github_main_infra_role.name
+    policy_arn = aws_iam_policy.github_main_infra_policy3.arn
 }
