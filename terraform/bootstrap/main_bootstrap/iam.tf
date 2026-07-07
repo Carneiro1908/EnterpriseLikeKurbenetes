@@ -158,11 +158,14 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "ec2:DescribeSubnets",
                     "ec2:DescribeSecurityGroupRules",
                     "ec2:DescribeInternetGateways",
+                    "ec2:AssociateRouteTable",
+                    "ec2:CreateNatGateway",
                     "logs:DescribeLogGroups",
                     "ec2:DescribeAddresses",
                     "iam:PassRole",
                     "logs:CreateLogDelivery",
                     "ec2:DescribeAddressesAttribute",
+                    "logs:CreateLogGroup",
                     "ec2:DescribeFlowLogs",
                     "iam:GetPolicy",
                     "iam:TagRole",
@@ -230,7 +233,7 @@ resource "aws_iam_policy" "github_main_infra_policy2" {
                     "s3:PutObject",
                     "s3:DeleteBucket"
                 ],
-                "Resource": "arn:aws:s3:::terraform-main-infra-bucket-eu-central-1"
+                "Resource": ["*"]
             },
             {
                 "Effect": "Allow",
