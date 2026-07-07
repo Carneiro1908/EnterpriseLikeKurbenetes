@@ -37,7 +37,6 @@ resource "aws_iam_policy" "bootstrap_policy" {
                 "iam:GetPolicyVersion",
                 "ec2:DescribeNetworkInterfaces",
                 "kms:CreateKey",
-                "kms:Decrypt",
                 "iam:ListPolicyVersions",
                 "iam:DeletePolicy",
                 "ec2:ReleaseAddress"
@@ -174,7 +173,7 @@ resource "aws_iam_policy" "bootstrap_policy2" {
   name = "bootstrap-policy-2"
 
   policy = jsonencode({
-    Version: "2012-10-17"
+    Version: "2012-10-17",
     Statement: [
       {
             "Effect": "Allow",
@@ -333,14 +332,38 @@ resource "aws_iam_policy" "bootstrap_policy2" {
   )
 }
 
+resource "aws_iam_policy" "bootstrap_policy3" {
+  name = "bootstrap-policy-3"
+
+  policy = jsonencode({
+    Version: "2012-10-17",
+    Statement: [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "kms:Decrypy",
+          "dynamodb:ListTagsOfResource",
+          "s3:GetBucketTagging"
+        ],
+        "Resource": ["*"]
+      }
+    ]
+  })
+}
+
+
+# Attachments
 resource "aws_iam_role_policy_attachment" "bootstrap_policy_attachment" {
   role       = aws_iam_role.bootstrap_role.name
   policy_arn = aws_iam_policy.bootstrap_policy.arn
 }
-
 resource "aws_iam_role_policy_attachment" "bootstrap_policy_attachment2" {
   role       = aws_iam_role.bootstrap_role.name
   policy_arn = aws_iam_policy.bootstrap_policy2.arn
+}
+resource "aws_iam_role_policy_attachment" "bootstrap_policy_attachment3" {
+  role       = aws_iam_role.bootstrap_role.name
+  policy_arn = aws_iam_policy.bootstrap_policy3.arn
 }
 
 # Adding read only policy for debbuger 
