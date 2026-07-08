@@ -1,15 +1,21 @@
+# NOTE: besides be non pratical, I will set force delete on this ecr
+# because is very helpfull on the debugging of the infrastructure, how ever
+# if this was a really enterprise & comercial project, I would turn force delete off
+
 resource "aws_ecr_repository" "app_repo" {
-    name = "enterprise-like-kubernetes/app"
-    image_tag_mutability = "IMMUTABLE"
+  name = "enterprise-like-kubernetes/app"
+  image_tag_mutability = "IMMUTABLE"
 
-    image_scanning_configuration {
-      scan_on_push = true
-    }
+  force_delete = true
 
-    encryption_configuration {
-      encryption_type = "KMS"
-      kms_key = aws_kms_key.ecr_key.arn
-    }
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  encryption_configuration {
+    encryption_type = "KMS"
+    kms_key = aws_kms_key.ecr_key.arn
+  }
 }
 
 resource "aws_ecr_lifecycle_policy" "app" {
