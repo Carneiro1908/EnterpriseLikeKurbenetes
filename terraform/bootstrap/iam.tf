@@ -1,6 +1,6 @@
 resource "aws_iam_role" "infra_cicd_role" {
     name = "infrastructure-cicd-role"
-    assume_role_policy = data.aws_iam_policy_document.github_actions_trust
+    assume_role_policy = data.aws_iam_policy_document.github_actions_trust.json
 }
 
 
