@@ -4,11 +4,11 @@ output "github_actions_trust_policy" {
 }
 
 output "state_bucket_name" {
-  value = aws_s3_bucket.global_infra_bucket.id
+  value = module.state_bucket.bucket_id
 }
 
 output "state_lock_table_name" {
-  value = aws_dynamodb_table.global_infra_dynamo_table.name
+  value = module.state_lock_table.table_name
 }
 
 output "state_kms_key_arn" {
