@@ -29,8 +29,7 @@ on:
         default: ''
         type: choice  
         options:
-          - main bootstrap
-          - main infra
+          - env global
           - env dev
           - env staging
           - env prod
@@ -66,22 +65,17 @@ jobs:
         id: setdir
         run: |
           case "${{ github.event.inputs.environment }}" in
-            "main bootstrap")
-              echo "dir=./terraform/bootstrap/main_bootstrap" >> "$GITHUB_OUTPUT"
-              echo "ROLE_NAME=terraform-bootstrap-role" >> "$GITHUB_ENV"
-              ;;
-            "main infra")
-              echo "dir=./terraform/main_infra" >> "$GITHUB_OUTPUT"
-              echo "ROLE_NAME=github_main_infra_role" >> "$GITHUB_ENV"
+            "env global")
+              echo "dir=./terraform/infrastructure/global" >> "$GITHUB_OUTPUT"
               ;;
             "env dev")
-              echo "dir=./terraform/main_infra/env/dev" >> "$GITHUB_OUTPUT"
+              echo "dir=./terraform/infrastructure/envs/dev" >> "$GITHUB_OUTPUT"
               ;;
             "env staging")
-              echo "dir=./terraform/main_infra/env/staging" >> "$GITHUB_OUTPUT"
+              echo "dir=./terraform/infrastructure/envs/staging" >> "$GITHUB_OUTPUT"
               ;;
             "env prod")
-              echo "dir=./terraform/main_infra/env/prod" >> "$GITHUB_OUTPUT"
+              echo "dir=./terraform/infrastructure/envs/prod" >> "$GITHUB_OUTPUT"
               ;;
             *)
               echo "Invalid environment: ${{ github.event.inputs.environment }}"
