@@ -67,30 +67,22 @@ jobs:
           case "${{ github.event.inputs.environment }}" in
             "env global")
               echo "dir=./terraform/infrastructure/global" >> "$GITHUB_OUTPUT"
-              
               echo "bucket_name=global-infrastructure-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
-
               echo "use_terragrunt=false" >> "$GITHUB_OUTPUT"
               ;;
             "env dev")
               echo "dir=./terraform/infrastructure/envs/dev" >> "$GITHUB_OUTPUT"
-
               echo "bucket_name=dev-environment-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
-
               echo "use_terragrunt=true" >> "$GITHUB_OUTPUT"
               ;;
             "env staging")
               echo "dir=./terraform/infrastructure/envs/staging" >> "$GITHUB_OUTPUT"
-
               echo "bucket_name=staging-environment-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
-
               echo "use_terragrunt=true" >> "$GITHUB_OUTPUT"
               ;;
             "env prod")
               echo "dir=./terraform/infrastructure/envs/prod" >> "$GITHUB_OUTPUT"
-
               echo "bucket_name=prod-environment-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
-
               echo "use_terragrunt=true" >> "$GITHUB_OUTPUT"
               ;;
             *)
@@ -106,14 +98,13 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           audience: sts.amazonaws.com
 
-
+      # Corrected GitHub Actions native conditional syntax
       - name: Terraform Init
-        if: ${{ steps.set_env.outputs.use_terragrunt }} == false
+        if: steps.set_env.outputs.use_terragrunt == 'false'
         working-directory: ${{ steps.set_env.outputs.dir }}
         run: |
           terraform init \
               -backend-config="bucket=${{steps.set_env.outputs.bucket_name}}"
-
 
       - name: Run iamlive and Terraform
         working-directory: ${{ steps.set_env.outputs.dir }}
@@ -121,8 +112,10 @@ jobs:
           AWS_CSM_ENABLED: "true"
           AWS_CSM_PORT: "31000"
           AWS_CSM_HOST: "127.0.0.1"
+          # Injecting step output safely as an environment variable for Bash usage
+          USE_TERRAGRUNT: ${{ steps.set_env.outputs.use_terragrunt }}
         run: |
-         # Runs iamlive in proxy model
+          # Runs iamlive in proxy model
           iamlive -mode proxy -output-file policy_output.json -force-wildcard-resource=false &
           IAMLIVE_PID=$!
           sleep 5
@@ -133,17 +126,16 @@ jobs:
           export HTTPS_PROXY=http://127.0.0.1:10080
           export AWS_CA_BUNDLE=$HOME/.iamlive/ca.pem
 
-          # Runs terraform / terragrunt commands
-          
-          if [${{ steps.set_env.outputs.use_terragrunt }} == false]; then
+          # Corrected Bash conditional logic, spaces, and added missing 'fi' statement
+          if [ "$USE_TERRAGRUNT" = "false" ]; then
             terraform apply --auto-approve || true
             sleep 120
             terraform destroy --auto-approve  || true  
-          elif [${{ steps.set_env.outputs.use_terragrunt }} == true]; then 
-            terragrunt run-all apply --terragrunt-non-interactive
+          elif [ "$USE_TERRAGRUNT" = "true" ]; then 
+            terragrunt run-all apply --terragrunt-non-interactive || true
             sleep 120
-            terragrunt run-all destroy --terragrunt-non-interactive
-
+            terragrunt run-all destroy --terragrunt-non-interactive || true
+          fi
 
           unset HTTP_PROXY HTTPS_PROXY AWS_CA_BUNDLE
 
@@ -151,7 +143,7 @@ jobs:
           kill -SIGINT $IAMLIVE_PID
           sleep 5
 
-      # 6. Gather the generated JSON file from the specific environment workspace and upload it
+      # Gather the generated JSON file from the specific environment workspace and upload it
       - name: Upload Policy Artifact
         uses: actions/upload-artifact@v4
         with:
