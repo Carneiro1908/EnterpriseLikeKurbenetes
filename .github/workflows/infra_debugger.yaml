@@ -37,6 +37,11 @@ jobs:
         with:
           terraform_version: 1.5.7
 
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v3
+        with:
+          terragrunt-version: 1.0.0
+
       - name: Install iamlive
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -64,21 +69,29 @@ jobs:
               echo "dir=./terraform/infrastructure/global" >> "$GITHUB_OUTPUT"
               
               echo "bucket_name=global-infrastructure-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
+
+              echo "use_terragrunt=false" >> "$GITHUB_OUTPUT"
               ;;
             "env dev")
               echo "dir=./terraform/infrastructure/envs/dev" >> "$GITHUB_OUTPUT"
 
               echo "bucket_name=dev-environment-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
+
+              echo "use_terragrunt=true" >> "$GITHUB_OUTPUT"
               ;;
             "env staging")
               echo "dir=./terraform/infrastructure/envs/staging" >> "$GITHUB_OUTPUT"
 
               echo "bucket_name=staging-environment-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
+
+              echo "use_terragrunt=true" >> "$GITHUB_OUTPUT"
               ;;
             "env prod")
               echo "dir=./terraform/infrastructure/envs/prod" >> "$GITHUB_OUTPUT"
 
               echo "bucket_name=prod-environment-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
+
+              echo "use_terragrunt=true" >> "$GITHUB_OUTPUT"
               ;;
             *)
               echo "Invalid environment: ${{ github.event.inputs.environment }}"
@@ -95,6 +108,7 @@ jobs:
 
 
       - name: Terraform Init
+        if: ${{ steps.set_env.outputs.use_terragrunt }} == false
         working-directory: ${{ steps.set_env.outputs.dir }}
         run: |
           terraform init \
@@ -119,12 +133,17 @@ jobs:
           export HTTPS_PROXY=http://127.0.0.1:10080
           export AWS_CA_BUNDLE=$HOME/.iamlive/ca.pem
 
-          # Runs terraform commands
-          terraform apply --auto-approve || true
+          # Runs terraform / terragrunt commands
           
-          sleep 120
+          if [${{ steps.set_env.outputs.use_terragrunt }} == false]; then
+            terraform apply --auto-approve || true
+            sleep 120
+            terraform destroy --auto-approve  || true  
+          elif [${{ steps.set_env.outputs.use_terragrunt }} == true]; then 
+            terragrunt run-all apply --terragrunt-non-interactive
+            sleep 120
+            terragrunt run-all destroy --terragrunt-non-interactive
 
-          terraform destroy --auto-approve  || true  
 
           unset HTTP_PROXY HTTPS_PROXY AWS_CA_BUNDLE
 

@@ -60,6 +60,11 @@ jobs:
         with:
           terraform_version: 1.5.7
 
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v3
+        with:
+          terragrunt-version: 1.0.0
+
       - name: Select Environment
         id: set_env
         run: |
@@ -70,6 +75,8 @@ jobs:
               echo "role_name=infrastructure-cicd-role" >> "$GITHUB_OUTPUT"
 
               echo "bucket_name=global-infrastructure-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
+
+              echo "use_terragrunt=false" >> "$GITHUB_OUTPUT"
               ;;
             "env dev")
               echo "dir=./terraform/infrastructure/envs/dev" >> "$GITHUB_OUTPUT"
@@ -77,6 +84,8 @@ jobs:
               echo "role_name=dev-cicd-environment-role" >> "$GITHUB_OUTPUT"
 
               echo "bucket_name=dev-environment-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
+
+              echo "use_terragrunt=true" >> "$GITHUB_OUTPUT"
               ;;
             "env staging")
               echo "dir=./terraform/infrastructure/envs/staging" >> "$GITHUB_OUTPUT"
@@ -84,6 +93,8 @@ jobs:
               echo "role_name=staging-cicd-environment-role" >> "$GITHUB_OUTPUT"
 
               echo "bucket_name=staging-environment-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
+
+              echo "use_terragrunt=true" >> "$GITHUB_OUTPUT"
               ;;
             "env prod")
               echo "dir=./terraform/infrastructure/envs/prod" >> "$GITHUB_OUTPUT"
@@ -91,6 +102,8 @@ jobs:
               echo "role_name=prod-cicd-environment-role" >> "$GITHUB_OUTPUT"
 
               echo "bucket_name=prod-environment-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
+
+              echo "use_terragrunt=true" >> "$GITHUB_OUTPUT"
               ;;
             *)
               echo "Invalid environment: ${{ github.event.inputs.environment }}"
@@ -106,12 +119,14 @@ jobs:
           audience: sts.amazonaws.com
 
       - name: Terraform Init
+        if: ${{ steps.set_env.outputs.use_terragrunt }} == false
         working-directory: ${{ steps.set_env.outputs.dir }}
         run: |
             terraform init \
               -backend-config="bucket=${{steps.set_env.outputs.bucket_name}}"
 
       - name: Terraform Validate
+        if: ${{ steps.set_env.outputs.use_terragrunt }} == false
         working-directory: ${{ steps.set_env.outputs.dir }}
         run: terraform validate
 
@@ -123,20 +138,44 @@ jobs:
 
       - name: Terraform Plan
         working-directory: ${{ steps.set_env.outputs.dir }}
-        if: ${{github.event.inputs.run_apply == 'true' || github.event.inputs.run_plan == 'true'}}
+        if: ${{github.event.inputs.run_apply == 'true' || github.event.inputs.run_plan == 'true'}} && ${{ steps.set_env.outputs.use_terragrunt }} == false
         run: terraform plan 
 
       - name: Terraform Apply
         working-directory: ${{ steps.set_env.outputs.dir }}
-        if: ${{ github.event.inputs.run_apply == 'true' }}
+        if: ${{ github.event.inputs.run_apply == 'true' }} && ${{ steps.set_env.outputs.use_terragrunt }} == false
         run: terraform apply -auto-approve 
 
       - name: Terraform Plan destroy
         working-directory: ${{ steps.set_env.outputs.dir }}
-        if: ${{github.event.inputs.run_destroy == 'true' || github.event.inputs.run_plan_destroy == 'true'}}
+        if: ${{github.event.inputs.run_destroy == 'true' || github.event.inputs.run_plan_destroy == 'true'}} && ${{ steps.set_env.outputs.use_terragrunt }} == false
         run: terraform plan --destroy 
 
       - name: Terraform Destroy
         working-directory: ${{ steps.set_env.outputs.dir }}
-        if: ${{ github.event.inputs.run_destroy == 'true' }}
+        if: ${{ github.event.inputs.run_destroy == 'true' }} && ${{ steps.set_env.outputs.use_terragrunt }} == false
         run: terraform destroy -auto-approve 
+
+      - name: Terragrunt Plan
+        if: ${{github.event.inputs.run_apply == 'true' || github.event.inputs.run_plan == 'true'}} && ${{ steps.set_env.outputs.use_terragrunt }} == true
+        working-directory: ${{ steps.set_env.outputs.dir }}
+        run: |
+          terragrunt run-all plan --terragrunt-non-interactive
+
+      - name: Terragrunt Apply
+        working-directory: ${{ steps.set_env.outputs.dir }}
+        if: ${{ github.event.inputs.run_apply == 'true' }} && ${{ steps.set_env.outputs.use_terragrunt }} == true
+        run: |
+          terragrunt run-all apply --terragrunt-non-interactive
+
+      - name: Terragrunt Plan destroy
+        working-directory: ${{ steps.set_env.outputs.dir }}
+        if: ${{github.event.inputs.run_destroy == 'true' || github.event.inputs.run_plan_destroy == 'true'}} && ${{ steps.set_env.outputs.use_terragrunt }} == true
+        run: |
+          terragrunt run-all plan -destroy --terragrunt-non-interactive
+
+      - name: Terraform Destroy
+        working-directory: ${{ steps.set_env.outputs.dir }}
+        if: ${{ github.event.inputs.run_destroy == 'true' }} && ${{ steps.set_env.outputs.use_terragrunt }} == true
+        run: |
+          terragrunt run-all destroy --terragrunt-non-interactive
