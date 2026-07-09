@@ -7,7 +7,7 @@
 module "dev_env_bucket" {
     source = "../modules/s3"
 
-    bucket_name = "dev-environment-bucket"
+    bucket_name = "dev-environment-bucket-${local.aws_account_id}"
 
     force_destroy = true
 }
@@ -15,7 +15,7 @@ module "dev_env_bucket" {
 module "staging_env_bucket" {
     source = "../modules/s3"
 
-    bucket_name = "stating-environment-bucket"
+    bucket_name = "staging-environment-bucket-${local.aws_account_id}"
 
     force_destroy = true
 }
@@ -23,7 +23,7 @@ module "staging_env_bucket" {
 module "prod_env_bucket" {
     source = "../modules/s3"
 
-    bucket_name = "prod-environment-bucket"
+    bucket_name = "prod-environment-bucket-${local.aws_account_id}"
 
     force_destroy = true
 }

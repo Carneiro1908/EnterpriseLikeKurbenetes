@@ -5,7 +5,7 @@
 module "state_bucket" {
   source = "../infrastructure/modules/s3"
 
-  bucket_name = "global-infrastructure-bucket"
+  bucket_name = "global-infrastructure-bucket-${local.aws_account_id}"
 
   enable_lifecycle = true 
   versioning_enabled = true  
