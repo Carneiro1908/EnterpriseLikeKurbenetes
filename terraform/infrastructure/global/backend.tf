@@ -4,6 +4,6 @@ terraform {
       key = "environment/global/terraform.tfstate"
       region = "eu-central-1"
       encrypt = true
-      dynamodb_table = "global_infra_dynamo_table"
+      dynamodb_table = "global-infra-dynamo-table"
     }
 }
