@@ -89,7 +89,7 @@ jobs:
         run: |
           aws sts get-caller-identity --region eu-central-1
           aws s3api head-bucket --bucket global-infrastructure-bucket --region eu-central-1
-          aws dynamodb describe-table --table-name global_infra_dynamo_table --region eu-central-1
+          aws dynamodb describe-table --table-name global-infra-dynamo-table --region eu-central-1
 
 
       - name: Terraform Init
