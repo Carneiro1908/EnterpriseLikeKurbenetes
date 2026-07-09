@@ -50,7 +50,6 @@ jobs:
     env:
       ACCOUNT_ID: ${{ secrets.ACCOUNT_ID }}
       AWS_REGION: eu-central-1
-      ROLE_NAME: ""
 
     steps:
       - name: Checkout repository
@@ -62,20 +61,28 @@ jobs:
           terraform_version: 1.5.7
 
       - name: Select Environment
-        id: setdir
+        id: set_env
         run: |
           case "${{ github.event.inputs.environment }}" in
             "env global")
               echo "dir=./terraform/infrastructure/global" >> "$GITHUB_OUTPUT"
+              
+              echo "role_name=infrastructure-cicd-role" >> "$GITHUB_OUTPUT"
               ;;
             "env dev")
               echo "dir=./terraform/infrastructure/envs/dev" >> "$GITHUB_OUTPUT"
+
+              echo "role_name=dev-cicd-environment-role" >> "$GITHUB_OUTPUT"
               ;;
             "env staging")
               echo "dir=./terraform/infrastructure/envs/staging" >> "$GITHUB_OUTPUT"
+
+              echo "role_name=staging-cicd-environment-role" >> "$GITHUB_OUTPUT"
               ;;
             "env prod")
               echo "dir=./terraform/infrastructure/envs/prod" >> "$GITHUB_OUTPUT"
+
+              echo "role_name=prod-cicd-environment-role" >> "$GITHUB_OUTPUT"
               ;;
             *)
               echo "Invalid environment: ${{ github.event.inputs.environment }}"
@@ -86,42 +93,42 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/${{env.ROLE_NAME}}
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/${{steps.set_env.outputs.role_name}}
           aws-region: ${{ env.AWS_REGION }}
           audience: sts.amazonaws.com
 
       - name: Terraform Init
-        working-directory: ${{ steps.setdir.outputs.dir }}
+        working-directory: ${{ steps.set_env.outputs.dir }}
         run: |
             terraform init \
             -backend-config="region=${{ env.AWS_REGION }}"
 
       - name: Terraform Validate
-        working-directory: ${{ steps.setdir.outputs.dir }}
+        working-directory: ${{ steps.set_env.outputs.dir }}
         run: terraform validate
 
       - name: DebugChecker
-        working-directory: ${{ steps.setdir.outputs.dir }}
+        working-directory: ${{ steps.set_env.outputs.dir }}
         run: |
-          echo ${{ steps.setdir.outputs.dir }}; 
+          echo ${{ steps.set_env.outputs.dir }}; 
           ls
 
       - name: Terraform Plan
-        working-directory: ${{ steps.setdir.outputs.dir }}
+        working-directory: ${{ steps.set_env.outputs.dir }}
         if: ${{github.event.inputs.run_apply == 'true' || github.event.inputs.run_plan == 'true'}}
         run: terraform plan 
 
       - name: Terraform Apply
-        working-directory: ${{ steps.setdir.outputs.dir }}
+        working-directory: ${{ steps.set_env.outputs.dir }}
         if: ${{ github.event.inputs.run_apply == 'true' }}
         run: terraform apply -auto-approve 
 
       - name: Terraform Plan destroy
-        working-directory: ${{ steps.setdir.outputs.dir }}
+        working-directory: ${{ steps.set_env.outputs.dir }}
         if: ${{github.event.inputs.run_destroy == 'true' || github.event.inputs.run_plan_destroy == 'true'}}
         run: terraform plan --destroy 
 
       - name: Terraform Destroy
-        working-directory: ${{ steps.setdir.outputs.dir }}
+        working-directory: ${{ steps.set_env.outputs.dir }}
         if: ${{ github.event.inputs.run_destroy == 'true' }}
         run: terraform destroy -auto-approve 

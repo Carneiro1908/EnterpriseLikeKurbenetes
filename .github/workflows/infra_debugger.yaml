@@ -57,14 +57,6 @@ jobs:
           # Adds the folder to the GitHub Actions PATH
           echo "$HOME/.iam-live" >> $GITHUB_PATH
 
-      # 2. Configure AWS Credentials with your existing OIDC Role
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/iamlive-role
-          aws-region: ${{ env.AWS_REGION }}
-          audience: sts.amazonaws.com
-
       # 3. Dynamically map and select the environment folder matching the input options
       - name: Select environment
         id: setdir
@@ -87,6 +79,14 @@ jobs:
               exit 1
               ;;
           esac
+
+      # 2. Configure AWS Credentials with your existing OIDC Role
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.ACCOUNT_ID }}:role/infrastructure-debugger-role
+          aws-region: ${{ env.AWS_REGION }}
+          audience: sts.amazonaws.com
 
       # 4. Initialize Terraform using your required S3 Backend Configuration variables
       - name: Terraform Init
