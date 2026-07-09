@@ -112,6 +112,9 @@ jobs:
           AWS_CSM_ENABLED: "true"
           AWS_CSM_PORT: "31000"
           AWS_CSM_HOST: "127.0.0.1"
+          NO_PROXY: "oidc.eks.eu-central-1.amazonaws.com"   
+          no_proxy: "oidc.eks.eu-central-1.amazonaws.com"
+
           # Injecting step output safely as an environment variable for Bash usage
           USE_TERRAGRUNT: ${{ steps.set_env.outputs.use_terragrunt }}
         run: |

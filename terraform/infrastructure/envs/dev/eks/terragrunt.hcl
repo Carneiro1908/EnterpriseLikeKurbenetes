@@ -45,7 +45,7 @@ inputs = {
   node_groups = {
     default = {
       instance_types = ["t2.micro"]
-      capacity_type  = local.env_vars.locals.environment == "prod" ? "ON_DEMAND" : "SPOT"
+      capacity_type  = "ON_DEMAND" 
       min_size       = 1
       max_size       = local.env_vars.locals.environment == "prod" ? 5 : 3
       desired_size   = 2
