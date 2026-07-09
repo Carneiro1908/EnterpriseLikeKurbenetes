@@ -132,9 +132,9 @@ jobs:
             sleep 120
             terraform destroy --auto-approve  || true  
           elif [ "$USE_TERRAGRUNT" = "true" ]; then 
-            terragrunt run-all apply --terragrunt-non-interactive || true
+            terragrunt run-all apply --non-interactive || true
             sleep 120
-            terragrunt run-all destroy --terragrunt-non-interactive || true
+            terragrunt run-all destroy --non-interactive || true
           fi
 
           unset HTTP_PROXY HTTPS_PROXY AWS_CA_BUNDLE

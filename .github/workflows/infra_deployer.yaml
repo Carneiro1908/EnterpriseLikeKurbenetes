@@ -151,22 +151,22 @@ jobs:
         if: (github.event.inputs.run_apply == true || github.event.inputs.run_plan == true) && steps.set_env.outputs.use_terragrunt == 'true'
         working-directory: ${{ steps.set_env.outputs.dir }}
         run: |
-          terragrunt run-all plan --terragrunt-non-interactive
+          terragrunt run-all plan --non-interactive
 
       - name: Terragrunt Apply
         working-directory: ${{ steps.set_env.outputs.dir }}
         if: github.event.inputs.run_apply == true && steps.set_env.outputs.use_terragrunt == 'true'
         run: |
-          terragrunt run-all apply --terragrunt-non-interactive
+          terragrunt run-all apply --non-interactive
 
       - name: Terragrunt Plan destroy
         working-directory: ${{ steps.set_env.outputs.dir }}
         if: (github.event.inputs.run_destroy == true || github.event.inputs.run_plan_destroy == true) && steps.set_env.outputs.use_terragrunt == 'true'
         run: |
-          terragrunt run-all plan -destroy --terragrunt-non-interactive
+          terragrunt run-all plan -destroy --non-interactive
 
       - name: Terragrunt Destroy
         working-directory: ${{ steps.set_env.outputs.dir }}
         if: github.event.inputs.run_destroy == true && steps.set_env.outputs.use_terragrunt == 'true'
         run: |
-          terragrunt run-all destroy --terragrunt-non-interactive
+          terragrunt run-all destroy --non-interactive
