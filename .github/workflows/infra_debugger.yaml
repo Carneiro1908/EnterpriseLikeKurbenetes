@@ -89,14 +89,13 @@ jobs:
         run: |
           aws sts get-caller-identity --region eu-central-1
           aws s3api head-bucket --bucket global-infrastructure-bucket --region eu-central-1
+          aws dynamodb describe-table --table-name global_infra_dynamo_table --region eu-central-1
+
 
       - name: Terraform Init
         working-directory: ${{ steps.setdir.outputs.dir }}
         run: |
-          terraform init \
-            -backend-config="bucket=terraform-main-bootstrap-bucket-${{ env.AWS_REGION }}" \
-            -backend-config="key=enviroment/bootstrap/terraform.tfstate" \
-            -backend-config="region=${{ env.AWS_REGION }}"
+          terraform init
 
       - name: Run iamlive and Terraform
         working-directory: ${{ steps.setdir.outputs.dir }}
