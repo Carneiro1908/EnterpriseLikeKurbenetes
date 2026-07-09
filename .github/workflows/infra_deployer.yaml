@@ -100,8 +100,7 @@ jobs:
       - name: Terraform Init
         working-directory: ${{ steps.set_env.outputs.dir }}
         run: |
-            terraform init \
-            -backend-config="region=${{ env.AWS_REGION }}"
+            terraform init 
 
       - name: Terraform Validate
         working-directory: ${{ steps.set_env.outputs.dir }}
