@@ -128,13 +128,13 @@ jobs:
 
           # Corrected Bash conditional logic, spaces, and added missing 'fi' statement
           if [ "$USE_TERRAGRUNT" = "false" ]; then
-            terraform apply --auto-approve || true
+            terraform apply --auto-approve 
             sleep 120
-            terraform destroy --auto-approve  || true  
+            terraform destroy --auto-approve  
           elif [ "$USE_TERRAGRUNT" = "true" ]; then 
-            terragrunt run --all apply --non-interactive || true
+            terragrunt run --all apply --non-interactive
             sleep 120
-            terragrunt run --all destroy --non-interactive || true
+            terragrunt run --all destroy --non-interactive
           fi
 
           unset HTTP_PROXY HTTPS_PROXY AWS_CA_BUNDLE
