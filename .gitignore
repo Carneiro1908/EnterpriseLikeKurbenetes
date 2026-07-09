@@ -1,2 +1,6 @@
 # Ignore Terraform module & library files
 *.terraform
+
+
+# .github/CODEOWNERS
+./terraform/bootstrap/  @tomaslima
