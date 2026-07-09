@@ -69,28 +69,28 @@ jobs:
               
               echo "role_name=infrastructure-cicd-role" >> "$GITHUB_OUTPUT"
 
-              echo "bucket_name=global-infrastructure-bucket-${{secrets.ACCOUNT_ID}}"
+              echo "bucket_name=global-infrastructure-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
               ;;
             "env dev")
               echo "dir=./terraform/infrastructure/envs/dev" >> "$GITHUB_OUTPUT"
 
               echo "role_name=dev-cicd-environment-role" >> "$GITHUB_OUTPUT"
 
-              echo "bucket_name=dev-environment-bucket-${{secrets.ACCOUNT_ID}}"
+              echo "bucket_name=dev-environment-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
               ;;
             "env staging")
               echo "dir=./terraform/infrastructure/envs/staging" >> "$GITHUB_OUTPUT"
 
               echo "role_name=staging-cicd-environment-role" >> "$GITHUB_OUTPUT"
 
-              echo "bucket_name=staging-environment-bucket-${{secrets.ACCOUNT_ID}}"
+              echo "bucket_name=staging-environment-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
               ;;
             "env prod")
               echo "dir=./terraform/infrastructure/envs/prod" >> "$GITHUB_OUTPUT"
 
               echo "role_name=prod-cicd-environment-role" >> "$GITHUB_OUTPUT"
 
-              echo "bucket_name=prod-environment-bucket-${{secrets.ACCOUNT_ID}}"
+              echo "bucket_name=prod-environment-bucket-${{secrets.ACCOUNT_ID}}" >> "$GITHUB_OUTPUT"
               ;;
             *)
               echo "Invalid environment: ${{ github.event.inputs.environment }}"
