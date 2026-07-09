@@ -85,11 +85,11 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           audience: sts.amazonaws.com
 
-      - name: Check Identity
+      - name: Check Backend
         run: |
           aws sts get-caller-identity --region eu-central-1
           aws s3api head-bucket --bucket global-infrastructure-bucket --region eu-central-1
-          aws dynamodb describe-table --table-name global-infra-dynamo-table --region eu-central-1
+          aws dynamodb describe-table --table-name global-infra-dynamodb-table --region eu-central-1
 
 
       - name: Terraform Init
