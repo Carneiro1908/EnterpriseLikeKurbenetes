@@ -1,4 +1,4 @@
-data "terraform_remote_state" "bootstrap_oicd_trust_policy_json" {
+data "terraform_remote_state"  "origin" {
     backend = "local"
 
     config = {
