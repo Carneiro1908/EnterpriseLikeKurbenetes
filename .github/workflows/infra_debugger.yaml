@@ -37,7 +37,6 @@ jobs:
         with:
           terraform_version: 1.5.7
 
-      # 1. Download iamlive using GitHub API directly to get the Linux AMD64 asset
       - name: Install iamlive
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -57,7 +56,6 @@ jobs:
           # Adds the folder to the GitHub Actions PATH
           echo "$HOME/.iam-live" >> $GITHUB_PATH
 
-      # 3. Dynamically map and select the environment folder matching the input options
       - name: Select environment
         id: setdir
         run: |
@@ -80,7 +78,6 @@ jobs:
               ;;
           esac
 
-      # 2. Configure AWS Credentials with your existing OIDC Role
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -88,7 +85,11 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           audience: sts.amazonaws.com
 
-      # 4. Initialize Terraform using your required S3 Backend Configuration variables
+      - name: Check Identity
+        run: |
+          aws sts get-caller-identity --region eu-central-1
+          aws s3api head-bucket --bucket global-infrastructure-bucket --region eu-central-1
+
       - name: Terraform Init
         working-directory: ${{ steps.setdir.outputs.dir }}
         run: |
@@ -97,7 +98,6 @@ jobs:
             -backend-config="key=enviroment/bootstrap/terraform.tfstate" \
             -backend-config="region=${{ env.AWS_REGION }}"
 
-      # 5. Start iamlive, map Terraform execution via CSM, and save results
       - name: Run iamlive and Terraform
         working-directory: ${{ steps.setdir.outputs.dir }}
         env:
