@@ -57,7 +57,7 @@ jobs:
           echo "$HOME/.iam-live" >> $GITHUB_PATH
 
       - name: Select environment
-        id: setdir
+        id: set_env
         run: |
           case "${{ github.event.inputs.environment }}" in
             "env global")
@@ -95,13 +95,14 @@ jobs:
 
 
       - name: Terraform Init
-        working-directory: ${{ steps.setdir.outputs.dir }}
+        working-directory: ${{ steps.set_env.outputs.dir }}
         run: |
           terraform init \
               -backend-config="bucket=${{steps.set_env.outputs.bucket_name}}"
 
+
       - name: Run iamlive and Terraform
-        working-directory: ${{ steps.setdir.outputs.dir }}
+        working-directory: ${{ steps.set_env.outputs.dir }}
         env:
           AWS_CSM_ENABLED: "true"
           AWS_CSM_PORT: "31000"
@@ -136,4 +137,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: iam-policy
-          path: ${{ steps.setdir.outputs.dir }}/policy_output.json
+          path: ${{ steps.set_env.outputs.dir }}/policy_output.json
