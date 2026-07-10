@@ -2,12 +2,21 @@ name: Build and Deploy to EKS
 
 on: 
   workflow_dispatch:
-    
+    inputs:
+      environment:
+        description: The target infrastructure 
+        required: true
+        default: "pick a environment"
+        type: choice  
+        options:
+          - env dev
+          - env staging
+          - env prod
 
 env:
   AWS_REGION: eu-central-1
-  ECR_REPOSITORY: comercial-k8s-apps
-  EKS_CLUSTER_NAME: eks-commercial-study
+  ECR_REPOSITORY: enterprise-like-kubernetes/app
+  EKS_CLUSTER_NAME: enterprise-like-k8s-
   IMAGE_TAG: ${{ github.sha }}
 
 permissions:
@@ -21,6 +30,25 @@ jobs:
     steps:
       - name: Code checkout
         uses: actions/checkout@v4
+
+      - name: Select environment
+        id: set_env
+        run: |
+          case "${{ github.event.inputs.environment }}" in
+            "env dev")
+              echo "eks_sufix"=dev" >> "$GITHUB_OUTPUT"
+              ;;
+            "env staging")
+              echo "eks_sufix=staging" >> "$GITHUB_OUTPUT"
+              ;;
+            "env prod")
+              echo "eks_sufix=prod" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Invalid environment: ${{ github.event.inputs.environment }}"
+              exit 1
+              ;;
+          esac
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -43,7 +71,7 @@ jobs:
 
       - name: Update kubeconfig
         run: |
-          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}+${{steps.set_env.outputs.eks_sufix}}
 
       - name: Update image in manifest
         env:
