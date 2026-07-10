@@ -1,0 +1,90 @@
+name: Build and Deploy to EKS
+
+on: 
+  workflow_dispatch:
+    
+
+env:
+  AWS_REGION: eu-central-1
+  ECR_REPOSITORY: comercial-k8s-apps
+  EKS_CLUSTER_NAME: eks-commercial-study
+  IMAGE_TAG: ${{ github.sha }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::547320736290:role/github-actions-cicd-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login on Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag & push of image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./App
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}
+
+      - name: Update image in manifest
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          sed -i "s|image:.*|image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" manifests/deployment.yaml
+
+      - name: Clean up old deployment
+        run: |
+          kubectl delete deployment my-app || echo "Deployment already deleted or not found."
+
+      - name: Apply manifest to EKS
+        run: |
+          kubectl apply -f manifests/deployment.yaml
+          kubectl apply -f manifests/service.yaml
+
+      - name: Pre-Rollout Snapshot
+        run: |
+          echo "=== CURRENT CLUSTER STATE ==="
+          kubectl get deployments
+          kubectl get pods
+          kubectl get services
+
+      - name: Inspect App Container Logs
+        run: |
+          echo "=== LATEST APPLICATION LOGS (CRASH INSPECTION) ==="
+          kubectl logs deployment/my-app --all-containers=true --tail=50 || echo "No active or historical logs could be pulled yet."
+
+      - name: Verify rollout
+        id: verify_out
+        run: |
+          kubectl rollout status deployment/my-app --timeout=300s
+          kubectl wait --for=condition=available deployment/my-app --timeout=300s
+
+      - name: Get Web App Public URL
+        run: |
+          sleep 10 
+          kubectl get service my-app
+
+      - name: Post-Failure Deep Diagnostics
+        if: failure() && steps.verify_out.outcome == 'failure'
+        run: |
+          kubectl describe deployment/my-app
+          kubectl get events --sort-by='.metadata.creationTimestamp' | tail -n 25
