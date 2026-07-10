@@ -44,12 +44,12 @@ inputs = {
 
   node_groups = {
     default = {
-      instance_types = ["t3.micro"]
-      capacity_type  = local.env_vars.locals.environment == "prod" ? "ON_DEMAND" : "SPOT"
-      min_size       = 1
-      max_size       = local.env_vars.locals.environment == "prod" ? 5 : 3
-      desired_size   = 2
-      disk_size      = 30
+      instance_types = ["t3.small"]
+      capacity_type  = "ON_DEMAND"
+      min_size       = 0
+      max_size       = 2
+      desired_size   = 1
+      disk_size      = 20
     }
   }
 
