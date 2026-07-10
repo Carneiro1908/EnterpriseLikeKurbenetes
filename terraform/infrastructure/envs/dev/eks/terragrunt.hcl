@@ -46,10 +46,10 @@ inputs = {
     default = {
       instance_types = ["t2.micro"]
       capacity_type  = "ON_DEMAND" 
-      min_size       = 1
+      min_size       = 0
       max_size       = 2
-      desired_size   = 2
-      disk_size      = 30
+      desired_size   = 1
+      disk_size      = 20
     }
   }
 
