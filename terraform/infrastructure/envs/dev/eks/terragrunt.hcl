@@ -47,7 +47,7 @@ inputs = {
       instance_types = ["t2.micro"]
       capacity_type  = "ON_DEMAND" 
       min_size       = 1
-      max_size       = local.env_vars.locals.environment == "prod" ? 5 : 3
+      max_size       = 2
       desired_size   = 2
       disk_size      = 30
     }
