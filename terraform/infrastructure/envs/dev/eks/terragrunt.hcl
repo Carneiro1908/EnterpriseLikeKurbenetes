@@ -44,8 +44,8 @@ inputs = {
 
   node_groups = {
     default = {
-      instance_types = ["t3.micro"]
-      capacity_type  = "ON_DEMAND" 
+      instance_types = ["t3.small"]
+      capacity_type  = "ON_DEMAND"
       min_size       = 0
       max_size       = 2
       desired_size   = 1

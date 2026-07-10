@@ -1,31 +1,31 @@
 output "cluster_id" {
-  value = aws_eks_cluster.this.id
+  value = module.eks.cluster_id
 }
 
 output "cluster_arn" {
-  value = aws_eks_cluster.this.arn
+  value = module.eks.cluster_arn
 }
 
 output "cluster_endpoint" {
-  value = aws_eks_cluster.this.endpoint
+  value = module.eks.cluster_endpoint
 }
 
 output "cluster_certificate_authority_data" {
-  value = aws_eks_cluster.this.certificate_authority[0].data
+  value = module.eks.cluster_certificate_authority_data
 }
 
 output "cluster_security_group_id" {
-  value = aws_security_group.cluster.id
+  value = module.eks.cluster_security_group_id
 }
 
-output "node_role_arn" {
-  value = aws_iam_role.node.arn
+output "node_security_group_id" {
+  value = module.eks.node_security_group_id
 }
 
 output "oidc_provider_arn" {
-  value = var.enable_irsa ? aws_iam_openid_connect_provider.cluster[0].arn : null
+  value = var.enable_irsa ? module.eks.oidc_provider_arn : null
 }
 
 output "oidc_provider_url" {
-  value = var.enable_irsa ? aws_eks_cluster.this.identity[0].oidc[0].issuer : null
+  value = module.eks.cluster_oidc_issuer_url
 }
