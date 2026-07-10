@@ -53,6 +53,14 @@ inputs = {
     }
   }
 
+
+  enable_observability    = true
+  enable_monitoring       = true
+
+  # I am deliberate setting the password public, because as this is not a important project(not a really comercial one)
+  # there is no problem is show the password.
+  grafana_admin_password  = get_env("GRAFANA_ADMIN_PASSWORD", "1234567890@grafana.password")
+
   tags = {
     Environment = local.env_vars.locals.environment
   }

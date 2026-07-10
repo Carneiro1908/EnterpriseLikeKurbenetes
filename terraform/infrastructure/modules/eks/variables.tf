@@ -57,6 +57,23 @@ variable "node_groups" {
   }))
 }
 
+variable "enable_monitoring" {
+  type    = bool
+  default = false
+}
+
+
+variable "enable_observability" {
+  type        = bool
+  default     = false
+}
+
+variable "grafana_admin_password" {
+  type      = string
+  sensitive = true
+  default   = "1234567890@grafana.password"
+}
+
 variable "tags" {
   type    = map(string)
   default = {}
