@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: finance_prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - web
+
+  grafana:
+    image: grafana/grafana-oss:11.1.0
+    container_name: finance_grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+  # Database Service (External local PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    container_name: finance_postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: finance_user
+      POSTGRES_PASSWORD: finance_secure_password
+      POSTGRES_DB: finance_dashboard
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Web Application Service (FastAPI + Glassmorphic UI)
+  web:
+    build: .
+    container_name: finance_web_app
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      # Pass PostgreSQL database URL to link web container with DB container
+      - DATABASE_URL=postgresql://finance_user:finance_secure_password@db:5432/finance_dashboard
+    depends_on:
+      - db
+    volumes:
+      # Optional: mount local folder if you want to mount sqlite files (fallback)
+      - .:/app
+
+volumes:
+  postgres_data:

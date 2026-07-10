@@ -1,17 +1,4 @@
 Project documentation:
 
-- Bootstrap
-    - micro bootstrap:
-        This HCL module hasn't a CI/CD workflow as the others, and its executed manualy, the .tfstate on it SHALL NOT be delete, otherwise it will
-        lose track of all resources created, when we try to delete this project infraestrucute, it must be last one to be deleted, it only provides some
-        few but necesarie infraestrucute for the main bootstrap
 
-    - main bootstrap:
-        The main bootstrap has a CI/CD workflow, but make it easier & safe to mantain and update, it also provider the role thats needed for all initial 
-        infraestruture, it also does create the initial infraestrucute for main infra backend, with focus of safety & stability
-
-- Main infraestrutute
-    - root:
-
-    - env:
         

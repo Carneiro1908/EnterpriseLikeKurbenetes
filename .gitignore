@@ -3,4 +3,9 @@
 
 
 # .github/CODEOWNERS
-./terraform/bootstrap/  @tomaslima
+./terraform/bootstrap/  @Carneiro1908
+
+# ignore environment directories
+.venv
+venv
+__pycache__
