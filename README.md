@@ -1,64 +1,64 @@
 # EnterpriseLikeK8s / Antigravity Finance
 
-Este repositório reúne uma aplicação de finanças pessoais em formato de dashboard, com backend em FastAPI, frontend estático, banco de dados relacional, observabilidade com Prometheus/Grafana e infraestrutura pronta para Kubernetes e AWS com Terraform/Terragrunt.
+This repository brings together a personal finance application in dashboard form, with a FastAPI backend, static frontend, relational database, observability with Prometheus/Grafana, and infrastructure ready for Kubernetes and AWS using Terraform/Terragrunt.
 
-O projeto foi pensado como uma referência prática para um ambiente "enterprise-like", com foco em:
+The project was designed as a practical reference for an "enterprise-like" environment, focused on:
 
-- API REST robusta para gestão de transações financeiras
-- Interface web simples e responsiva
-- Persistência local ou via PostgreSQL
-- Métricas para monitoramento
-- Deploy com Docker, Kubernetes e infraestrutura como código
+- A robust REST API for financial transaction management
+- A simple and responsive web interface
+- Local persistence or PostgreSQL-backed persistence
+- Metrics for monitoring
+- Deployment with Docker, Kubernetes, and infrastructure as code
 
 ---
 
-## Visão geral
+## Overview
 
-A aplicação permite registrar receitas e despesas, visualizar estatísticas financeiras, acompanhar metas de economia e consultar métricas do serviço. Ela pode rodar localmente para desenvolvimento ou ser implantada em ambientes containerizados e cloud-native.
+The application allows you to record income and expenses, view financial statistics, track savings goals, and consult service metrics. It can run locally for development or be deployed in containerized and cloud-native environments.
 
-O projeto é composto por:
+The project is composed of:
 
 - Backend: FastAPI + SQLAlchemy
-- Banco de dados: SQLite por padrão, PostgreSQL opcional
-- Frontend: HTML/CSS/JavaScript estático
-- Observabilidade: Prometheus + Grafana
-- Deploy: Docker Compose, Kubernetes e Terraform/Terragrunt
+- Database: SQLite by default, PostgreSQL optionally
+- Frontend: Static HTML/CSS/JavaScript
+- Observability: Prometheus + Grafana
+- Deployment: Docker Compose, Kubernetes, and Terraform/Terragrunt
 
 ---
 
-## Funcionalidades
+## Features
 
-- Cadastro, listagem e remoção de transações
-- Categorização entre receita e despesa
-- Cálculo de saldo líquido e despesas por categoria
-- Gestão de metas de economia
-- Endpoint de saúde para validação de disponibilidade
-- Endpoint de métricas para integração com Prometheus
-- Interface web para interação rápida
+- Register, list, and remove transactions
+- Categorize between income and expense
+- Calculate net balance and expenses by category
+- Manage savings goals
+- Health endpoint for availability validation
+- Metrics endpoint for Prometheus integration
+- Web interface for quick interaction
 
 ---
 
-## Arquitetura
+## Architecture
 
-A estrutura do projeto segue uma separação clara entre aplicação, infraestrutura e observabilidade:
+The project structure follows a clear separation between application, infrastructure, and observability:
 
 ```text
-app/                  # Backend, frontend estático e configuração de execução
-manifests/           # Manifestos Kubernetes
-terraform/           # Terraform/Terragrunt para provisionamento AWS
+app/                  # Backend, static frontend, and runtime configuration
+manifests/           # Kubernetes manifests
+terraform/           # Terraform/Terragrunt for AWS provisioning
 ```
 
-Fluxo principal:
+Main flow:
 
-1. O usuário acessa a interface web.
-2. A aplicação envia requisições ao backend FastAPI.
-3. O backend persiste os dados no SQLite (local) ou PostgreSQL (externo).
-4. O endpoint /metrics expõe métricas para Prometheus.
-5. O Grafana consome esses dados para dashboards.
+1. The user accesses the web interface.
+2. The application sends requests to the FastAPI backend.
+3. The backend persists data in SQLite (local) or PostgreSQL (external).
+4. The /metrics endpoint exposes metrics to Prometheus.
+5. Grafana consumes this data for dashboards.
 
 ---
 
-## Estrutura do repositório
+## Repository structure
 
 ```text
 .
@@ -81,32 +81,32 @@ Fluxo principal:
     └── infrastructure/
 ```
 
-### Descrição dos principais arquivos
+### Description of the main files
 
-- app/server.py: aplicação FastAPI, rotas da API e servir frontend
-- app/database.py: modelos, inicialização do banco e operações CRUD
-- app/public/: frontend estático em HTML/CSS/JavaScript
-- app/docker-compose.yml: execução local com PostgreSQL, FastAPI, Prometheus e Grafana
-- manifests/: templates Kubernetes para deploy e serviço
-- terraform/: infraestrutura como código para AWS com Terraform/Terragrunt
+- app/server.py: FastAPI application, API routes, and frontend serving
+- app/database.py: models, database initialization, and CRUD operations
+- app/public/: static frontend in HTML/CSS/JavaScript
+- app/docker-compose.yml: local execution with PostgreSQL, FastAPI, Prometheus, and Grafana
+- manifests/: Kubernetes templates for deployment and service
+- terraform/: infrastructure as code for AWS using Terraform/Terragrunt
 
 ---
 
-## Requisitos
+## Requirements
 
-Antes de rodar, certifique-se de ter instalado:
+Before running the project, make sure you have installed:
 
 - Python 3.10+
 - pip
-- Docker e Docker Compose (para execução em containers)
-- Kubernetes (opcional, para testes locais com kubectl)
-- Terraform e Terragrunt (opcional, para provisionamento da infraestrutura)
+- Docker and Docker Compose (for container-based execution)
+- Kubernetes (optional, for local cluster testing with kubectl)
+- Terraform and Terragrunt (optional, for infrastructure provisioning)
 
 ---
 
-## Executando localmente
+## Running locally
 
-### 1. Criar ambiente virtual
+### 1. Create a virtual environment
 
 ```bash
 cd app
@@ -115,83 +115,83 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2. Rodar a aplicação
+### 2. Run the application
 
 ```bash
 python server.py
 ```
 
-A aplicação fica disponível em:
+The application will be available at:
 
 - http://localhost:8000
 - http://localhost:8000/healthz
 - http://localhost:8000/metrics
 
-### 3. Banco de dados
+### 3. Database
 
-Por padrão, o projeto usa SQLite armazenado localmente no arquivo finance.db dentro da pasta app.
+By default, the project uses SQLite stored locally in the finance.db file inside the app folder.
 
-Para usar PostgreSQL, defina a variável de ambiente:
+To use PostgreSQL, define the environment variable:
 
 ```bash
-export DATABASE_URL="postgresql://usuario:senha@host:5432/nome_do_banco"
+export DATABASE_URL="postgresql://username:password@host:5432/database_name"
 ```
 
-Se a variável não existir, o sistema usará SQLite automaticamente.
+If the variable is not set, the system will use SQLite automatically.
 
 ---
 
-## Executando com Docker Compose
+## Running with Docker Compose
 
-A partir da pasta app:
+From the app folder:
 
 ```bash
 cd app
 docker compose up --build
 ```
 
-Serviços disponibilizados:
+Services provided:
 
-- Aplicação web: http://localhost:8000
+- Web application: http://localhost:8000
 - PostgreSQL: localhost:5432
 - Prometheus: http://localhost:9090
 - Grafana: http://localhost:3000
 
-Credenciais padrão do Grafana:
+Default Grafana credentials:
 
-- Usuário: admin
-- Senha: admin
+- Username: admin
+- Password: admin
 
 ---
 
-## Executando com Kubernetes
+## Running with Kubernetes
 
-Os manifests em manifests/ podem ser usados para deploy em um cluster Kubernetes.
+The manifests in manifests/ can be used for deployment in a Kubernetes cluster.
 
 ```bash
 kubectl apply -f manifests/deployment.yaml
 kubectl apply -f manifests/service.yaml
 ```
 
-Observações importantes:
+Important notes:
 
-- O deployment usa uma imagem do ECR AWS como exemplo.
-- O service expõe a aplicação via LoadBalancer.
-- Em um ambiente real, é necessário ajustar a imagem, namespace, secrets e configurações de rede.
+- The deployment uses an AWS ECR image as an example.
+- The service exposes the application via a LoadBalancer.
+- In a real environment, you should adjust the image, namespace, secrets, and network settings.
 
 ---
 
-## Infraestrutura com Terraform/Terragrunt
+## Infrastructure with Terraform/Terragrunt
 
-A pasta terraform contém estruturas para provisionar recursos na AWS.
+The terraform folder contains structures to provision resources in AWS.
 
-### Estrutura
+### Structure
 
-- terraform/bootstrap: recursos iniciais como S3, DynamoDB, IAM e OIDC
-- terraform/infrastructure/global: recursos compartilhados do ambiente
-- terraform/infrastructure/envs/: ambientes dev, staging e prod com módulos de VPC e EKS
+- terraform/bootstrap: initial resources such as S3, DynamoDB, IAM, and OIDC
+- terraform/infrastructure/global: shared resources for the environment
+- terraform/infrastructure/envs/: dev, staging, and prod environments with VPC and EKS modules
 
-### Exemplo de fluxo
+### Example workflow
 
 ```bash
 cd terraform/infrastructure/envs/dev
@@ -199,41 +199,41 @@ terragrunt run-all plan
 terragrunt run-all apply
 ```
 
-A configuração pode ser ajustada conforme a sua conta AWS, região e necessidades de segurança.
+The configuration can be adjusted according to your AWS account, region, and security needs.
 
 ---
 
-## Endpoints da API
+## API endpoints
 
-### Saúde
+### Health
 
 - GET /healthz
 
-Retorna status da aplicação.
+Returns the application status.
 
-### Métricas
+### Metrics
 
 - GET /metrics
 
-Exibe métricas em formato Prometheus.
+Displays metrics in Prometheus format.
 
-### Transações
+### Transactions
 
 - GET /api/transactions
 - POST /api/transactions
 - DELETE /api/transactions
 
-Parâmetros do GET:
+GET parameters:
 
-- search: filtro por descrição
-- type: all, income ou expense
-- category: nome da categoria
+- search: filter by description
+- type: all, income, or expense
+- category: category name
 
-Exemplo de payload para POST:
+Example POST payload:
 
 ```json
 {
-  "description": "Compras do mês",
+  "description": "Monthly shopping",
   "amount": 125.50,
   "type": "expense",
   "category": "Food",
@@ -241,11 +241,11 @@ Exemplo de payload para POST:
 }
 ```
 
-### Estatísticas
+### Statistics
 
 - GET /api/stats
 
-Retorna:
+Returns:
 
 - total_income
 - total_expense
@@ -254,80 +254,80 @@ Retorna:
 - db_type
 - db_scope
 
-### Metas de economia
+### Savings goals
 
 - GET /api/goals
 - POST /api/goals
 
 ---
 
-## Testes
+## Testing
 
-O projeto inclui um script de testes de integração para validar os principais endpoints.
+The project includes an integration test script to validate the main endpoints.
 
 ```bash
 cd app
 python test_api.py
 ```
 
-Os testes verificam:
+The tests verify:
 
-- carregamento da interface web
-- listagem de transações
-- criação de transação
-- cálculo de estatísticas
-- endpoint de métricas
-- remoção de transação
-
----
-
-## Observabilidade
-
-A aplicação expõe métricas HTTP via Prometheus. O stack do Docker Compose inclui:
-
-- Prometheus para coleta de métricas
-- Grafana para visualização e dashboards
-
-As métricas principais incluem:
-
-- total de requisições HTTP
-- latência das requisições
-- status code por endpoint
+- web interface loading
+- transaction listing
+- transaction creation
+- statistics calculation
+- metrics endpoint
+- transaction deletion
 
 ---
 
-## Segurança e boas práticas
+## Observability
 
-Algumas boas práticas já aplicadas no projeto:
+The application exposes HTTP metrics through Prometheus. The Docker Compose stack includes:
 
-- uso de variáveis de ambiente para configuração
-- validação de entrada com Pydantic
-- CORS habilitado para desenvolvimento
-- health check para orquestração e balanceamento
-- containerização com imagens dedicadas
+- Prometheus for metric collection
+- Grafana for visualization and dashboards
 
-Para ambientes de produção, recomenda-se:
+The main metrics include:
 
-- trocar credenciais padrão
-- configurar secrets para banco e serviços externos
-- habilitar autenticação no Grafana
-- usar TLS e políticas de rede mais restritivas
+- total HTTP requests
+- request latency
+- status codes by endpoint
 
 ---
 
-## Contribuindo
+## Security and best practices
 
-Contribuições são bem-vindas. Para colaborar:
+Some best practices already applied in the project:
 
-1. Faça um fork do projeto
-2. Crie uma branch para a sua mudança
-3. Realize as alterações e teste localmente
-4. Abra um pull request descrevendo o que foi alterado
+- use of environment variables for configuration
+- input validation with Pydantic
+- CORS enabled for development
+- health checks for orchestration and load balancing
+- containerization with dedicated images
+
+For production environments, it is recommended to:
+
+- change default credentials
+- configure secrets for databases and external services
+- enable Grafana authentication
+- use TLS and more restrictive network policies
 
 ---
 
-## Licença
+## Contributing
 
-Este projeto está licenciado sob a licença MIT, uma licença livre e permissiva que permite uso, cópia, modificação, fusão, publicação, distribuição e uso comercial, desde que o aviso de copyright e esta licença sejam preservados.
+Contributions are welcome. To collaborate:
 
-Veja o arquivo LICENSE para mais detalhes.
+1. Fork the project
+2. Create a branch for your change
+3. Make the changes and test locally
+4. Open a pull request describing what was changed
+
+---
+
+## License
+
+This project is licensed under the MIT License, a free and permissive license that allows use, copying, modification, merging, publication, distribution, and commercial use, provided that the copyright notice and this license are preserved.
+
+See the LICENSE file for more details.
